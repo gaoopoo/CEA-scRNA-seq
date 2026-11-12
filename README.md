@@ -5,10 +5,7 @@ Analysis code for the carotid endarterectomy (CEA) single-cell RNA sequencing (s
 This repository contains the R code used to analyse scRNA-seq data from human carotid atherosclerotic plaques, stratified by blinded histopathological grading combined with clinical presentation. It does not contain the sequencing data itself: the data are deposited in the NCBI Gene Expression Omnibus (GEO), separate from this code repository.
 
 > [!NOTE]
-> This README describes the nine scripts in this repository (cleaned UTF-8 versions uploaded 2026-11-12; the original "
-    "GBK uploads were verified 2026-11-11). One placeholder remains on purpose while the manuscript is unpublished: the Zenodo DOI (created when the code is "
-    "archived at publication time). Fill it in when it exists; everything else in this file is complete. See "
-    "\"Known limitations\" before publishing: the scripts depend on intermediate `.rds` files that are not in this repository.
+> This README describes the nine scripts in this repository (cleaned UTF-8 versions uploaded 2026-11-12; the original GBK uploads were verified 2026-11-11). The Zenodo DOI is not yet assigned: the code will be archived on Zenodo when the manuscript is published, and the DOI will be added to the Citation section then. See "Known limitations" before publishing: the scripts depend on intermediate `.rds` files that are not in this repository.
 
 ## Study design
 
@@ -222,7 +219,7 @@ This repository contains analysis code only. The statements below were checked a
 - It contains no sequencing data, count matrices, or analysis result objects. Those belong in GEO, not in this repository.
 - The scripts use a single configurable project root (`cea.project_root`, set at the top of each script) instead of absolute paths (see "Known limitations" point 1). The original uploads contained absolute `G:/13sample/` paths; none remain in the files in this repository (verified 2026-11-12).
 
-Before making this repository public, fix points 1–4 under "Known limitations" and re-check the files for `.Rhistory`, `.RData`, and other session files, which can carry the same problems.
+Points 1 and 4 under "Known limitations" (absolute paths, file encoding) are fixed in the files in this repository. Points 2–3 (missing upstream script, missing `00_common.R`) and 5–7 remain open — see "Known limitations". Before making this repository public, re-check the files for `.Rhistory`, `.RData`, and other session files, which can carry the same problems.
 
 ## Licence
 
@@ -230,12 +227,10 @@ This code is released under the MIT Licence. See `LICENSE` in this repository.
 
 ## Citation
 
-**\[TO COMPLETE: after the code is archived on Zenodo, add the version DOI here and delete this note.\]**
+The code will be archived on Zenodo when the manuscript is published; the version DOI will be added here then. Until then, please cite the repository as:
 
-Please cite the archived release of this code:
-
-> \[Authors\]. Analysis code for "Histopathology-anchored single-cell RNA sequencing of symptomatic and asymptomatic human carotid atherosclerotic plaques". Zenodo. DOI: \[TO COMPLETE: 10.5281/zenodo.XXXXXXX\]
+> Analysis code for "Histopathology-anchored single-cell RNA sequencing of symptomatic and asymptomatic human carotid atherosclerotic plaques". GitHub repository: https://github.com/gaoopoo/CEA-scRNA-seq.
 
 Code availability statement for the manuscript:
 
-> Analysis code is available at https://github.com/gaoopoo/CEA-scRNA-seq and archived on Zenodo (DOI: \[TO COMPLETE: 10.5281/zenodo.XXXXXXX\]).
+> Analysis code is available at https://github.com/gaoopoo/CEA-scRNA-seq.
