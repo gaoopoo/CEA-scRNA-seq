@@ -1,10 +1,17 @@
+# Project root: the folder containing SMC/, macro/, Fig3/, Fig5_CellChat/, etc.
+# Every path in this script is built from this one setting, so the code no longer
+# depends on a single hard-coded drive letter. Either start R/RStudio in the
+# project root, or edit the one line below to point at it directly.
+# Stored as an R option so it survives the rm(list = ls()) calls between sections.
+options(cea.project_root = normalizePath(".", mustWork = FALSE))
+
 #Figure 2. Pathology-stratified single-cell atlas identifies repair-associated programs in human carotid plaques
 ## Figure A-C
-#-------------»ùÒò±í´ï¿ÉÊÓ»¯----------------
-  #¼ÓÔØ°ü
+#-------------åŸºå› è¡¨è¾¾å¯è§†åŒ–----------------
+  #åŠ è½½åŒ…
   rm(list = ls())
 gc()
-setwd("G:/13sample/")
+setwd(paste0(getOption("cea.project_root"), "/"))
 library(Seurat)
 library(tidyverse)
 library(ggplot2)
@@ -48,7 +55,7 @@ use_col<- c(Fibroblasts1="#B46356FF",
             ASYM="#C71000FF",#group_col
             SYM="#8BEAFFFF")
 
-#Ö÷ÒªÏ¸°ûÑÇÈºdotplot
+#ä¸»è¦ç»†èƒäºšç¾¤dotplot
 combined131$maincelltype <- fct_relevel(combined131$maincelltype, "Prolifing","Bcell","DC","Mast",
                                         "NK","Neutro","EC","Mono",
                                         "Macro","Tcell", "SMC","Fibro")
@@ -72,156 +79,156 @@ DotPlot(combined131, features = markers1, cols = c("#FFFFFF", "#00468BFF"),
 ggsave("combined131/dotplot.pdf",width=14,height=6,device = "pdf") 
 
 
-###celltype;TSNE×ø±êÖáµ÷Õû
+###celltype;TSNEåæ ‡è½´è°ƒæ•´
 library(SingleR)
 library(Seurat)
 library(tidyverse)
 library(ggrepel)
 #
 DimPlot(combined131, group.by = "celltype",reduction = "tsne",raster=FALSE)
-#¶ş ggplot2»æÖÆtsneÍ¼
-#2.1 ²é¿´»æÖÆtsneµÄÊı¾İ
-tsne = combined131@reductions$tsne @cell.embeddings %>%  #×ø±êĞÅÏ¢
+#äºŒ ggplot2ç»˜åˆ¶tsneå›¾
+#2.1 æŸ¥çœ‹ç»˜åˆ¶tsneçš„æ•°æ®
+tsne = combined131@reductions$tsne @cell.embeddings %>%  #åæ ‡ä¿¡æ¯
   as.data.frame() %>% 
-  cbind(celltype = combined131@meta.data$celltype) #celltype »òÕßÕßgroup
+  cbind(celltype = combined131@meta.data$celltype) #celltype æˆ–è€…è€…group
 
 p <- ggplot(tsne,aes(x= tSNE_1 , y = tSNE_2 ,color = celltype)) +
   geom_point(size = 0.1 , alpha =1 )+scale_color_manual(values = use_col)
 
-#Èı ggplot2-umap-µ÷Õû
-#3.1 µ÷ÕûumapÍ¼ - theme
+#ä¸‰ ggplot2-umap-è°ƒæ•´
+#3.1 è°ƒæ•´umapå›¾ - theme
 p2 <- p  +
-  theme(panel.grid.major = element_blank(), #Ö÷Íø¸ñÏß
-        panel.grid.minor = element_blank(), #´ÎÍø¸ñÏß
-        panel.border = element_blank(), #±ß¿ò
-        axis.title = element_blank(),  #Öá±êÌâ
-        axis.text = element_blank(), # Öá¿Ì¶ÈÎÄ±¾
-        axis.ticks = element_blank(),# Öá¿Ì¶È
-        axis.line= element_blank(),#×ø±êÖá
-        panel.background = element_rect(fill = 'white'), #±³¾°É«
+  theme(panel.grid.major = element_blank(), #ä¸»ç½‘æ ¼çº¿
+        panel.grid.minor = element_blank(), #æ¬¡ç½‘æ ¼çº¿
+        panel.border = element_blank(), #è¾¹æ¡†
+        axis.title = element_blank(),  #è½´æ ‡é¢˜
+        axis.text = element_blank(), # è½´åˆ»åº¦æ–‡æœ¬
+        axis.ticks = element_blank(),# è½´åˆ»åº¦
+        axis.line= element_blank(),#åæ ‡è½´
+        panel.background = element_rect(fill = 'white'), #èƒŒæ™¯è‰²
         plot.background=element_rect(fill="white"))
-##3.2 µ÷ÕûumapÍ¼ - legend
+##3.2 è°ƒæ•´umapå›¾ - legend
 p3 <- p2 +         
   theme(
-    legend.title = element_blank(), #È¥µôlegend.title 
+    legend.title = element_blank(), #å»æ‰legend.title 
     legend.key=element_rect(fill='white'), #
-    legend.text = element_text(size=10), #ÉèÖÃlegend±êÇ©µÄ´óĞ¡
-    legend.key.size=unit(0.5,'cm') ) +  # ÉèÖÃlegend±êÇ©Ö®¼äµÄ´óĞ¡
-  guides(color = guide_legend(override.aes = list(size=3))) #ÉèÖÃlegendÖĞ µãµÄ´óĞ¡ 
+    legend.text = element_text(size=10), #è®¾ç½®legendæ ‡ç­¾çš„å¤§å°
+    legend.key.size=unit(0.5,'cm') ) +  # è®¾ç½®legendæ ‡ç­¾ä¹‹é—´çš„å¤§å°
+  guides(color = guide_legend(override.aes = list(size=3))) #è®¾ç½®legendä¸­ ç‚¹çš„å¤§å° 
 
-#3.3 µ÷ÕûumapÍ¼ - annotation
-#×ø±êÖá·Åµ½×óÏÂ½Ç¿ÉÒÔÍ¨¹ıggplot2Ìí¼Ó¼ıÍ·ºÍÎÄ±¾ÊµÏÖ¡£
+#3.3 è°ƒæ•´umapå›¾ - annotation
+#åæ ‡è½´æ”¾åˆ°å·¦ä¸‹è§’å¯ä»¥é€šè¿‡ggplot2æ·»åŠ ç®­å¤´å’Œæ–‡æœ¬å®ç°ã€‚
 p4 <- p3 + 
   geom_segment(aes(x = min(tsne$tSNE_1) , y = min(tsne$tSNE_2) ,
-                   xend = min(tsne$tSNE_1) +10, yend = min(tsne$tSNE_2) ),#XÖáÏß³¤£¬+10ÆğµãÕıÏò£«3
-               colour = "black", linewidth=1,arrow = arrow(length = unit(0.3,"cm")))+ #XÖáÏß¿í¡¢¼ıÍ·
+                   xend = min(tsne$tSNE_1) +10, yend = min(tsne$tSNE_2) ),#Xè½´çº¿é•¿ï¼Œ+10èµ·ç‚¹æ­£å‘ï¼‹3
+               colour = "black", linewidth=1,arrow = arrow(length = unit(0.3,"cm")))+ #Xè½´çº¿å®½ã€ç®­å¤´
   geom_segment(aes(x = min(tsne$tSNE_1)  , y = min(tsne$tSNE_2)  ,
-                   xend = min(tsne$tSNE_1) , yend = min(tsne$tSNE_2) + 10),#yÖáÏß³¤
+                   xend = min(tsne$tSNE_1) , yend = min(tsne$tSNE_2) + 10),#yè½´çº¿é•¿
                colour = "black", linewidth=1,arrow = arrow(length = unit(0.3,"cm"))) +
   annotate("text", x = min(tsne$tSNE_1) +5, y = min(tsne$tSNE_2) -2, label = "tSNE_1",
-           color="black",size = 3.5, fontface="plain" ) + #XÖá×¢ÊÍtSNE_1,+/-Êı×Öµ÷Õû¾àÆğµãÎ»ÖÃ
+           color="black",size = 3.5, fontface="plain" ) + #Xè½´æ³¨é‡ŠtSNE_1,+/-æ•°å­—è°ƒæ•´è·èµ·ç‚¹ä½ç½®
   annotate("text", x = min(tsne$tSNE_1) -2, y = min(tsne$tSNE_2) + 5, label = "tSNE_2",
-           color="black",size = 3.5, fontface="plain" ,angle=90) #YÖá×¢ÊÍtSNE_1
+           color="black",size = 3.5, fontface="plain" ,angle=90) #Yè½´æ³¨é‡ŠtSNE_1
 p4
 
 ggsave("combined131/celltypetsne1.pdf",width=8,height=6,device = "pdf")
 
 
-##------------maincelltype;TSNE×ø±êÖáµ÷Õû
-tsne = combined131@reductions$tsne @cell.embeddings %>%  #×ø±êĞÅÏ¢
+##------------maincelltype;TSNEåæ ‡è½´è°ƒæ•´
+tsne = combined131@reductions$tsne @cell.embeddings %>%  #åæ ‡ä¿¡æ¯
   as.data.frame() %>% 
-  cbind(maincelltype = combined131@meta.data$maincelltype) #celltype »òÕßÕßgroup
+  cbind(maincelltype = combined131@meta.data$maincelltype) #celltype æˆ–è€…è€…group
 head(tsne )
 p <- ggplot(tsne,aes(x= tSNE_1 , y = tSNE_2 ,color = maincelltype)) +
   geom_point(size = 0.1, alpha =1)+scale_color_manual(values = use_col)
 
-#Èı ggplot2-umap-µ÷Õû
-#3.1 µ÷ÕûumapÍ¼ - theme
+#ä¸‰ ggplot2-umap-è°ƒæ•´
+#3.1 è°ƒæ•´umapå›¾ - theme
 p2 <- p  +
-  theme(panel.grid.major = element_blank(), #Ö÷Íø¸ñÏß
-        panel.grid.minor = element_blank(), #´ÎÍø¸ñÏß
-        panel.border = element_blank(), #±ß¿ò
-        axis.title = element_blank(),  #Öá±êÌâ
-        axis.text = element_blank(), # Öá¿Ì¶ÈÎÄ±¾
-        axis.ticks = element_blank(),# Öá¿Ì¶È
-        axis.line= element_blank(),#×ø±êÖá
-        panel.background = element_rect(fill = 'white'), #±³¾°É«
+  theme(panel.grid.major = element_blank(), #ä¸»ç½‘æ ¼çº¿
+        panel.grid.minor = element_blank(), #æ¬¡ç½‘æ ¼çº¿
+        panel.border = element_blank(), #è¾¹æ¡†
+        axis.title = element_blank(),  #è½´æ ‡é¢˜
+        axis.text = element_blank(), # è½´åˆ»åº¦æ–‡æœ¬
+        axis.ticks = element_blank(),# è½´åˆ»åº¦
+        axis.line= element_blank(),#åæ ‡è½´
+        panel.background = element_rect(fill = 'white'), #èƒŒæ™¯è‰²
         plot.background=element_rect(fill="white"))
-##3.2 µ÷ÕûumapÍ¼ - legend
+##3.2 è°ƒæ•´umapå›¾ - legend
 p3 <- p2 +         
   theme(
-    legend.title = element_blank(), #È¥µôlegend.title 
+    legend.title = element_blank(), #å»æ‰legend.title 
     legend.key=element_rect(fill='white'), #
-    legend.text = element_text(size=10), #ÉèÖÃlegend±êÇ©µÄ´óĞ¡
-    legend.key.size=unit(0.5,'cm') ) +  # ÉèÖÃlegend±êÇ©Ö®¼äµÄ´óĞ¡
-  guides(color = guide_legend(override.aes = list(size=3))) #ÉèÖÃlegendÖĞ µãµÄ´óĞ¡ 
+    legend.text = element_text(size=10), #è®¾ç½®legendæ ‡ç­¾çš„å¤§å°
+    legend.key.size=unit(0.5,'cm') ) +  # è®¾ç½®legendæ ‡ç­¾ä¹‹é—´çš„å¤§å°
+  guides(color = guide_legend(override.aes = list(size=3))) #è®¾ç½®legendä¸­ ç‚¹çš„å¤§å° 
 
-#3.3 µ÷ÕûumapÍ¼ - annotation
-#×ø±êÖá·Åµ½×óÏÂ½Ç¿ÉÒÔÍ¨¹ıggplot2Ìí¼Ó¼ıÍ·ºÍÎÄ±¾ÊµÏÖ¡£
+#3.3 è°ƒæ•´umapå›¾ - annotation
+#åæ ‡è½´æ”¾åˆ°å·¦ä¸‹è§’å¯ä»¥é€šè¿‡ggplot2æ·»åŠ ç®­å¤´å’Œæ–‡æœ¬å®ç°ã€‚
 p4 <- p3 + 
   geom_segment(aes(x = min(tsne$tSNE_1) , y = min(tsne$tSNE_2) ,
-                   xend = min(tsne$tSNE_1) +10, yend = min(tsne$tSNE_2) ),#XÖáÏß³¤£¬+10ÆğµãÕıÏò£«3
-               colour = "black", linewidth=1,arrow = arrow(length = unit(0.3,"cm")))+ #XÖáÏß¿í¡¢¼ıÍ·
+                   xend = min(tsne$tSNE_1) +10, yend = min(tsne$tSNE_2) ),#Xè½´çº¿é•¿ï¼Œ+10èµ·ç‚¹æ­£å‘ï¼‹3
+               colour = "black", linewidth=1,arrow = arrow(length = unit(0.3,"cm")))+ #Xè½´çº¿å®½ã€ç®­å¤´
   geom_segment(aes(x = min(tsne$tSNE_1)  , y = min(tsne$tSNE_2)  ,
-                   xend = min(tsne$tSNE_1) , yend = min(tsne$tSNE_2) + 10),#yÖáÏß³¤
+                   xend = min(tsne$tSNE_1) , yend = min(tsne$tSNE_2) + 10),#yè½´çº¿é•¿
                colour = "black", linewidth=1,arrow = arrow(length = unit(0.3,"cm"))) +
   annotate("text", x = min(tsne$tSNE_1) +5, y = min(tsne$tSNE_2) -2, label = "tSNE_1",
-           color="black",size = 3.5, fontface="plain" ) + #XÖá×¢ÊÍtSNE_1,+/-Êı×Öµ÷Õû¾àÆğµãÎ»ÖÃ
+           color="black",size = 3.5, fontface="plain" ) + #Xè½´æ³¨é‡ŠtSNE_1,+/-æ•°å­—è°ƒæ•´è·èµ·ç‚¹ä½ç½®
   annotate("text", x = min(tsne$tSNE_1) -2, y = min(tsne$tSNE_2) + 5, label = "tSNE_2",
-           color="black",size = 3.5, fontface="plain" ,angle=90) #YÖá×¢ÊÍtSNE_1
+           color="black",size = 3.5, fontface="plain" ,angle=90) #Yè½´æ³¨é‡ŠtSNE_1
 p4
 
 ggsave("combined131/maincelltypetsne1.pdf",width=8,height=6,device = "pdf")
 
 
-##------------group;TSNE×ø±êÖáµ÷Õû
-tsne = combined131@reductions$tsne @cell.embeddings %>%  #×ø±êĞÅÏ¢
+##------------group;TSNEåæ ‡è½´è°ƒæ•´
+tsne = combined131@reductions$tsne @cell.embeddings %>%  #åæ ‡ä¿¡æ¯
   as.data.frame() %>% 
-  cbind(group = combined131@meta.data$group ) #celltype »òÕßÕßgroup
+  cbind(group = combined131@meta.data$group ) #celltype æˆ–è€…è€…group
 head(tsne )
 p <- ggplot(tsne,aes(x= tSNE_1 , y = tSNE_2 ,color = group )) +
   geom_point(size = 0.1, alpha =1)+scale_color_manual(values = use_col)
 
-#Èı ggplot2-umap-µ÷Õû
-#3.1 µ÷ÕûumapÍ¼ - theme
+#ä¸‰ ggplot2-umap-è°ƒæ•´
+#3.1 è°ƒæ•´umapå›¾ - theme
 p2 <- p  +
-  theme(panel.grid.major = element_blank(), #Ö÷Íø¸ñÏß
-        panel.grid.minor = element_blank(), #´ÎÍø¸ñÏß
-        panel.border = element_blank(), #±ß¿ò
-        axis.title = element_blank(),  #Öá±êÌâ
-        axis.text = element_blank(), # Öá¿Ì¶ÈÎÄ±¾
-        axis.ticks = element_blank(),# Öá¿Ì¶È
-        axis.line= element_blank(),#×ø±êÖá
-        panel.background = element_rect(fill = 'white'), #±³¾°É«
+  theme(panel.grid.major = element_blank(), #ä¸»ç½‘æ ¼çº¿
+        panel.grid.minor = element_blank(), #æ¬¡ç½‘æ ¼çº¿
+        panel.border = element_blank(), #è¾¹æ¡†
+        axis.title = element_blank(),  #è½´æ ‡é¢˜
+        axis.text = element_blank(), # è½´åˆ»åº¦æ–‡æœ¬
+        axis.ticks = element_blank(),# è½´åˆ»åº¦
+        axis.line= element_blank(),#åæ ‡è½´
+        panel.background = element_rect(fill = 'white'), #èƒŒæ™¯è‰²
         plot.background=element_rect(fill="white"))
-##3.2 µ÷ÕûumapÍ¼ - legend
+##3.2 è°ƒæ•´umapå›¾ - legend
 p3 <- p2 +         
   theme(
-    legend.title = element_blank(), #È¥µôlegend.title 
+    legend.title = element_blank(), #å»æ‰legend.title 
     legend.key=element_rect(fill='white'), #
-    legend.text = element_text(size=10), #ÉèÖÃlegend±êÇ©µÄ´óĞ¡
-    legend.key.size=unit(0.5,'cm') ) +  # ÉèÖÃlegend±êÇ©Ö®¼äµÄ´óĞ¡
-  guides(color = guide_legend(override.aes = list(size=3))) #ÉèÖÃlegendÖĞ µãµÄ´óĞ¡ 
+    legend.text = element_text(size=10), #è®¾ç½®legendæ ‡ç­¾çš„å¤§å°
+    legend.key.size=unit(0.5,'cm') ) +  # è®¾ç½®legendæ ‡ç­¾ä¹‹é—´çš„å¤§å°
+  guides(color = guide_legend(override.aes = list(size=3))) #è®¾ç½®legendä¸­ ç‚¹çš„å¤§å° 
 
-#3.3 µ÷ÕûumapÍ¼ - annotation
-#×ø±êÖá·Åµ½×óÏÂ½Ç¿ÉÒÔÍ¨¹ıggplot2Ìí¼Ó¼ıÍ·ºÍÎÄ±¾ÊµÏÖ¡£
+#3.3 è°ƒæ•´umapå›¾ - annotation
+#åæ ‡è½´æ”¾åˆ°å·¦ä¸‹è§’å¯ä»¥é€šè¿‡ggplot2æ·»åŠ ç®­å¤´å’Œæ–‡æœ¬å®ç°ã€‚
 p4 <- p3 + 
   geom_segment(aes(x = min(tsne$tSNE_1) , y = min(tsne$tSNE_2) ,
-                   xend = min(tsne$tSNE_1) +10, yend = min(tsne$tSNE_2) ),#XÖáÏß³¤£¬+10ÆğµãÕıÏò£«3
-               colour = "black", linewidth=1,arrow = arrow(length = unit(0.3,"cm")))+ #XÖáÏß¿í¡¢¼ıÍ·
+                   xend = min(tsne$tSNE_1) +10, yend = min(tsne$tSNE_2) ),#Xè½´çº¿é•¿ï¼Œ+10èµ·ç‚¹æ­£å‘ï¼‹3
+               colour = "black", linewidth=1,arrow = arrow(length = unit(0.3,"cm")))+ #Xè½´çº¿å®½ã€ç®­å¤´
   geom_segment(aes(x = min(tsne$tSNE_1)  , y = min(tsne$tSNE_2)  ,
-                   xend = min(tsne$tSNE_1) , yend = min(tsne$tSNE_2) + 10),#yÖáÏß³¤
+                   xend = min(tsne$tSNE_1) , yend = min(tsne$tSNE_2) + 10),#yè½´çº¿é•¿
                colour = "black", linewidth=1,arrow = arrow(length = unit(0.3,"cm"))) +
   annotate("text", x = min(tsne$tSNE_1) +5, y = min(tsne$tSNE_2) -2, label = "tSNE_1",
-           color="black",size = 3.5, fontface="plain" ) + #XÖá×¢ÊÍtSNE_1,+/-Êı×Öµ÷Õû¾àÆğµãÎ»ÖÃ
+           color="black",size = 3.5, fontface="plain" ) + #Xè½´æ³¨é‡ŠtSNE_1,+/-æ•°å­—è°ƒæ•´è·èµ·ç‚¹ä½ç½®
   annotate("text", x = min(tsne$tSNE_1) -2, y = min(tsne$tSNE_2) + 5, label = "tSNE_2",
-           color="black",size = 3.5, fontface="plain" ,angle=90) #YÖá×¢ÊÍtSNE_1
+           color="black",size = 3.5, fontface="plain" ,angle=90) #Yè½´æ³¨é‡ŠtSNE_1
 p4
 
 ggsave("combined131/grouptsne.pdf",width=8,height=6,device = "pdf")
 
 
-#Ï¸°ûÑÇÈººÏ²¢maincell
+#ç»†èƒäºšç¾¤åˆå¹¶maincell
 maincell<- c("0"="VSMC","1"="LYM", "2"="VSMC", "3"= "Macro", 
              "4"= "LYM", "5"= "Macro","6"= "LYM", "7"= "Macro", 
              "8"= "EC","9"="MYE","10"="VSMC","11"="LYM", 
@@ -230,69 +237,69 @@ maincell<- c("0"="VSMC","1"="LYM", "2"="VSMC", "3"= "Macro",
              "19"="Macro","20"="Prolifing")
 combined131[['maincell']] = unname(maincell[combined131@meta.data$seurat_clusters])
 
-table(combined131$maincell)#²é¿´maincellÏ¸°ûÊı,ÊäÈëÏÂÃæ
+table(combined131$maincell)#æŸ¥çœ‹maincellç»†èƒæ•°,è¾“å…¥ä¸‹é¢
 
-#----------------maincell ±ÈÀı
+#----------------maincell æ¯”ä¾‹
 mydata<-data.frame(occupation=c(rep("Macro",27144),rep("VSMC",43491),
                                 rep("EC",5378),rep("LYM",33696),
                                 rep("MYE",8595),rep("Prolifing",1163)))
-#»æÍ¼£¬µ«ÊÇ°´ÕÕ×ÖÄ¸ÅÅÁĞ
+#ç»˜å›¾ï¼Œä½†æ˜¯æŒ‰ç…§å­—æ¯æ’åˆ—
 
-pdf("combined131/maincellproportion±ıÍ¼.pdf", width = 8, height = 6)
+pdf("combined131/maincellproportioné¥¼å›¾.pdf", width = 8, height = 6)
 PieChart(occupation, data = mydata,
-         hole =0,fill="viridis",#ÄÚ²¿È¦Îª0.5ÑÕÉ«
-         values_color="red",values_size=1.5,#Êı×Ö±êÇ©µÄÑÕÉ«£¬×ÖºÅ
-         main="Cell Proportion",#±êÌâ
+         hole =0,fill="viridis",#å†…éƒ¨åœˆä¸º0.5é¢œè‰²
+         values_color="red",values_size=1.5,#æ•°å­—æ ‡ç­¾çš„é¢œè‰²ï¼Œå­—å·
+         main="Cell Proportion",#æ ‡é¢˜
          main_cex =1.3) 
 dev.off()
 
-#ASYM×é£¬maincell ±ÈÀı
+#ASYMç»„ï¼Œmaincell æ¯”ä¾‹
 mydata1<-data.frame(occupation1=c(rep("Macro",12561),rep("VSMC",23241),
                                   rep("EC",2687),rep("LYM",20250),
                                   rep("MYE",3485),rep("Prolifing",396)))
 
-pdf("combined131/ASYM±ÈÀı±ıÍ¼.pdf", width = 8, height = 6)
+pdf("combined131/ASYMæ¯”ä¾‹é¥¼å›¾.pdf", width = 8, height = 6)
 PieChart(occupation1, data = mydata1,
-         hole =0.6,fill="viridis",#ÄÚ²¿È¦Îª0.5ÑÕÉ«
-         values_color="red",values_size=1.5,#Êı×Ö±êÇ©µÄÑÕÉ«£¬×ÖºÅ
-         main="ASYM Cell Proportion",#±êÌâ
+         hole =0.6,fill="viridis",#å†…éƒ¨åœˆä¸º0.5é¢œè‰²
+         values_color="red",values_size=1.5,#æ•°å­—æ ‡ç­¾çš„é¢œè‰²ï¼Œå­—å·
+         main="ASYM Cell Proportion",#æ ‡é¢˜
          main_cex =1.3) 
 dev.off()
 
-#SYM×é£¬maincelltype ±ÈÀı
+#SYMç»„ï¼Œmaincelltype æ¯”ä¾‹
 mydata2<-data.frame(occupation2=c(rep("Macro",13164),rep("VSMC",15174),
                                   rep("EC",1700),rep("LYM",10776),
                                   rep("MYE",4558),rep("Prolifing",686)))
 
-pdf("combined131/SYM±ÈÀı±ıÍ¼.pdf", width = 8, height = 6)
+pdf("combined131/SYMæ¯”ä¾‹é¥¼å›¾.pdf", width = 8, height = 6)
 PieChart(occupation2, data = mydata2,
-         hole =0.6,fill="viridis",#ÄÚ²¿È¦Îª0.5ÑÕÉ«
-         values_color="red",values_size=1.5,#Êı×Ö±êÇ©µÄÑÕÉ«£¬×ÖºÅ
-         main="SYM Cell Proportion",#±êÌâ
+         hole =0.6,fill="viridis",#å†…éƒ¨åœˆä¸º0.5é¢œè‰²
+         values_color="red",values_size=1.5,#æ•°å­—æ ‡ç­¾çš„é¢œè‰²ï¼Œå­—å·
+         main="SYM Cell Proportion",#æ ‡é¢˜
          main_cex =1.3) 
 dev.off()
 
 
-##------------Ï¸°ûÈºÖ®¼äµÄÏà¹ØĞÔÈÈÍ¼--------------
+##------------ç»†èƒç¾¤ä¹‹é—´çš„ç›¸å…³æ€§çƒ­å›¾--------------
 av <-AverageExpression(combined131,group.by = "celltype", assays = "RNA")
 av<-av[[1]]
 
-cg<-names(tail(sort(apply(av, 1, sd)),1000))#Ñ¡³ö±ê×¼²î×î´óµÄ1000¸ö»ùÒò
-# ²é¿´Õâ1000¸ö»ùÒòÔÚ¸÷Ï¸°ûÈºÖĞµÄ±í´ï¾ØÕó
+cg<-names(tail(sort(apply(av, 1, sd)),1000))#é€‰å‡ºæ ‡å‡†å·®æœ€å¤§çš„1000ä¸ªåŸºå› 
+# æŸ¥çœ‹è¿™1000ä¸ªåŸºå› åœ¨å„ç»†èƒç¾¤ä¸­çš„è¡¨è¾¾çŸ©é˜µ
 expression_matrix <- av[cg,]
 
-# È·±£ expression_matrix ÊÇ¾ØÕó
+# ç¡®ä¿ expression_matrix æ˜¯çŸ©é˜µ
 if (!is.matrix(expression_matrix)) {
   expression_matrix <- as.matrix(expression_matrix)
 }
 
-# ¼ÆËãÏ¸°ûÈºµÄÏà¹ØĞÔ¾ØÕó£¨Ê¹ÓÃSpearmanÏà¹ØĞÔ£©
+# è®¡ç®—ç»†èƒç¾¤çš„ç›¸å…³æ€§çŸ©é˜µï¼ˆä½¿ç”¨Spearmanç›¸å…³æ€§ï¼‰
 cor_matrix <- cor(expression_matrix, method = 'spearman')
 
-#pheatmap»æÖÆÈÈÍ¼
+#pheatmapç»˜åˆ¶çƒ­å›¾
 library(pheatmap)
 
-# Éú³ÉÈÈÍ¼
+# ç”Ÿæˆçƒ­å›¾
 pdf("combined131/celltype_correlation_heatmap.pdf", width = 10, height = 8)
 pheatmap(cor_matrix, 
          clustering_distance_rows = "correlation", 
@@ -303,10 +310,10 @@ pheatmap(cor_matrix,
 dev.off()
 
 
-# Éú³Éµ÷É«°å£¬ÀàËÆÓÚNature·ç¸ñ
+# ç”Ÿæˆè°ƒè‰²æ¿ï¼Œç±»ä¼¼äºNatureé£æ ¼
 library(RColorBrewer)
 nature_colors <- colorRampPalette(c("blue", "white", "red"))(100)
-# Éú³ÉÈÈÍ¼²¢±£´æÎªPDF
+# ç”Ÿæˆçƒ­å›¾å¹¶ä¿å­˜ä¸ºPDF
 pdf("combined131/celltype_correlation_heatmap_nature_style.pdf", width = 10, height = 8)
 pheatmap(cor_matrix, 
          clustering_distance_rows = "correlation", 
@@ -327,10 +334,10 @@ suppressMessages({
   library(ggrepel)
 })
 
-setwd("G:/13sample/")
-out_dir <- "G:/13sample/combined131/"
+setwd(paste0(getOption("cea.project_root"), "/"))
+out_dir <- paste0(getOption("cea.project_root"), "/combined131/")
 
-# ©¤©¤ 1. Êı¾İ×¼±¸ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 1. æ•°æ®å‡†å¤‡ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 prop_data <- data.frame(
   group = c( rep("ASYM", 6), rep("SYM", 6)),
   celltype = rep(c("VSMC","LYM","Macro","MYE","EC","Proliferating"), 3),
@@ -346,13 +353,13 @@ prop_data <- prop_data %>%
          pct_label = sprintf("%.0f%%", pct)) %>%
   ungroup()
 
-# ©¤©¤ 2. Òò×ÓË³Ğò£¨¾ö¶¨¶ÑµşË³Ğò£©©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-# ggplot ¶ÑµşË³Ğò£ºfactor levels µÚÒ»¸öÔÚµ×²ã
+# â”€â”€ 2. å› å­é¡ºåºï¼ˆå†³å®šå †å é¡ºåºï¼‰â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ggplot å †å é¡ºåºï¼šfactor levels ç¬¬ä¸€ä¸ªåœ¨åº•å±‚
 celltype_stack_order <- c("VSMC", "LYM", "Macro", "MYE", "EC", "Proliferating")
 prop_data$celltype <- factor(prop_data$celltype, levels = celltype_stack_order)
 prop_data$group <- factor(prop_data$group, levels = c( "ASYM", "SYM"))
 
-# ©¤©¤ 3. ÅäÉ« ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 3. é…è‰² â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 maincell_col <- c(
   "VSMC"          = "#FFE705FF",
   "LYM"           = "#3A6FA0FF",
@@ -362,8 +369,8 @@ maincell_col <- c(
   "Proliferating" = "#524559FF"
 )
 
-# ©¤©¤ 4. ·ÖÁ½Àà£ºÄÚ²¿±êÇ© vs Íâ²¿±êÇ© ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-# ãĞÖµ£º¡İ3% ÔÚÖùÄÚ±ê£¬<3% ÓÃÒıÏßÒıµ½Íâ²à
+# â”€â”€ 4. åˆ†ä¸¤ç±»ï¼šå†…éƒ¨æ ‡ç­¾ vs å¤–éƒ¨æ ‡ç­¾ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# é˜ˆå€¼ï¼šâ‰¥3% åœ¨æŸ±å†…æ ‡ï¼Œ<3% ç”¨å¼•çº¿å¼•åˆ°å¤–ä¾§
 labels_inside  <- prop_data %>% filter(pct >= 3)
 labels_outside <- prop_data %>% filter(pct < 3)
 
@@ -372,49 +379,49 @@ print(labels_inside %>% dplyr::select(group, celltype, pct))
 cat("\nLabels outside (<3%):\n")
 print(labels_outside %>% dplyr::select(group, celltype, pct))
 
-# ©¤©¤ 5. ¸øÍâ²¿±êÇ©¼ÆËã y ×ø±ê ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-# ¹Ø¼ü£º±ØĞë°´ ggplot µÄ¶Ñµş¹æÔòËã
-# ggplot ÓÃ position_stack Ê±£¬ÊÇ°´ factor levels Ë³ĞòÀÛ¼Ó
+# â”€â”€ 5. ç»™å¤–éƒ¨æ ‡ç­¾è®¡ç®— y åæ ‡ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# å…³é”®ï¼šå¿…é¡»æŒ‰ ggplot çš„å †å è§„åˆ™ç®—
+# ggplot ç”¨ position_stack æ—¶ï¼Œæ˜¯æŒ‰ factor levels é¡ºåºç´¯åŠ 
 # factor levels: VSMC, LYM, Macro, MYE, EC, Proliferating
-# ËùÒÔ VSMC ÔÚ×îµ×²ã (0 - pct_VSMC)
-# LYM ÔÚ VSMC ÉÏ·½ (pct_VSMC - pct_VSMC+pct_LYM)
+# æ‰€ä»¥ VSMC åœ¨æœ€åº•å±‚ (0 - pct_VSMC)
+# LYM åœ¨ VSMC ä¸Šæ–¹ (pct_VSMC - pct_VSMC+pct_LYM)
 # ...
 
 prop_data <- prop_data %>%
-  arrange(group, celltype) %>%   # ¹Ø¼ü£º°´ factor Ë³ĞòÅÅĞò
+  arrange(group, celltype) %>%   # å…³é”®ï¼šæŒ‰ factor é¡ºåºæ’åº
   group_by(group) %>%
   mutate(
-    y_cum_end = cumsum(pct),               # ¸ÃÉ«¿é¶¥²¿
-    y_cum_start = y_cum_end - pct,         # ¸ÃÉ«¿éµ×²¿
-    y_center = (y_cum_start + y_cum_end) / 2  # ¸ÃÉ«¿éÖĞĞÄ
+    y_cum_end = cumsum(pct),               # è¯¥è‰²å—é¡¶éƒ¨
+    y_cum_start = y_cum_end - pct,         # è¯¥è‰²å—åº•éƒ¨
+    y_center = (y_cum_start + y_cum_end) / 2  # è¯¥è‰²å—ä¸­å¿ƒ
   ) %>%
   ungroup()
 
-# ÖØĞÂ·ÖÀà£¨´ø y_center ĞÅÏ¢£©
+# é‡æ–°åˆ†ç±»ï¼ˆå¸¦ y_center ä¿¡æ¯ï¼‰
 labels_inside  <- prop_data %>% filter(pct >= 3)
 labels_outside <- prop_data %>% filter(pct < 3)
 
 cat("\nOutside labels with y_center:\n")
 print(labels_outside %>% dplyr::select(group, celltype, pct, y_center))
 
-# ©¤©¤ 6. »æÍ¼ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 6. ç»˜å›¾ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 p_D <- ggplot(prop_data,
               aes(x = group, y = pct, fill = celltype)) +
   geom_col(width = 0.65, color = "white", linewidth = 0.4) +
   
-  # ¡ï ÄÚ²¿±êÇ©£ºÓÃÊÖ¶¯ËãµÄ y_center£¬Í³Ò»ºÚÉ«
+  # â˜… å†…éƒ¨æ ‡ç­¾ï¼šç”¨æ‰‹åŠ¨ç®—çš„ y_centerï¼Œç»Ÿä¸€é»‘è‰²
   geom_text(data = labels_inside,
             aes(x = group, y = y_center, label = pct_label),
             color = "black", fontface = "bold", size = 3.5,
             inherit.aes = FALSE) +
   
-  # ¡ï Íâ²¿±êÇ©£ºÖ»ÏÔÊ¾±ÈÀı£¨²»´øÏ¸°ûÃû£©£¬ÓÃ ggrepel Òıµ½ÓÒ²à
+  # â˜… å¤–éƒ¨æ ‡ç­¾ï¼šåªæ˜¾ç¤ºæ¯”ä¾‹ï¼ˆä¸å¸¦ç»†èƒåï¼‰ï¼Œç”¨ ggrepel å¼•åˆ°å³ä¾§
   geom_text_repel(
     data = labels_outside,
     aes(x = group, y = y_center, label = pct_label),
-    nudge_x = 0.4,                  # ÍÆµ½ÖùÓÒ²à
-    direction = "y",                # Ö»ÔÚ y ·½Ïòµ÷Õû±ÜÃâÖØµş
-    hjust = 0,                      # ×ó¶ÔÆë
+    nudge_x = 0.4,                  # æ¨åˆ°æŸ±å³ä¾§
+    direction = "y",                # åªåœ¨ y æ–¹å‘è°ƒæ•´é¿å…é‡å 
+    hjust = 0,                      # å·¦å¯¹é½
     segment.size = 0.4,
     segment.color = "grey40",
     fontface = "bold",
@@ -422,7 +429,7 @@ p_D <- ggplot(prop_data,
     color = "black",
     box.padding = 0.3,
     point.padding = 0.1,
-    min.segment.length = 0,         # ¼´Ê¹½üÒ²»­ÒıÏß
+    min.segment.length = 0,         # å³ä½¿è¿‘ä¹Ÿç”»å¼•çº¿
     inherit.aes = FALSE,
     seed = 42
   ) +
@@ -433,7 +440,7 @@ p_D <- ggplot(prop_data,
                      breaks = c(0, 25, 50, 75, 100),
                      labels = c("0%", "25%", "50%", "75%", "100%"),
                      limits = c(0, 101)) +
-  coord_cartesian(clip = "off") +     # ¡ï ÔÊĞí±êÇ©³¬³ö»æÍ¼Çø
+  coord_cartesian(clip = "off") +     # â˜… å…è®¸æ ‡ç­¾è¶…å‡ºç»˜å›¾åŒº
   
   labs(title = "D. Cell composition",
        x = NULL,
@@ -452,7 +459,7 @@ p_D <- ggplot(prop_data,
     legend.position  = "right",
     legend.text      = element_text(size = 9, face = "bold"),
     legend.key.size  = unit(0.4, "cm"),
-    plot.margin      = margin(15, 30, 10, 10)   # ¡ï ÓÒ±ßÁô³ö¿Õ¼ä¸øÍâ²¿±êÇ©
+    plot.margin      = margin(15, 30, 10, 10)   # â˜… å³è¾¹ç•™å‡ºç©ºé—´ç»™å¤–éƒ¨æ ‡ç­¾
   ) +
   guides(fill = guide_legend(ncol = 1))
 
@@ -464,10 +471,10 @@ ggsave(paste0(out_dir, "Fig1D_v7_composition.png"), p_D,
 --------------------------------------------------------------------------------
 #Fig E-F  (GSE159677)
 
-# 0. »·¾³×¼±¸
+# 0. ç¯å¢ƒå‡†å¤‡
 # ============================================================================
 rm(list = ls())
-gc()  # ÇåÄÚ´æ
+gc()  # æ¸…å†…å­˜
 
 suppressMessages({
   library(Seurat)
@@ -479,11 +486,11 @@ suppressMessages({
   library(Matrix)
 })
 
-# ´´½¨¹¤×÷Ä¿Â¼
-out_dir <- "G:/13sample/Alsaigh_integration/"
+# åˆ›å»ºå·¥ä½œç›®å½•
+out_dir <- paste0(getOption("cea.project_root"), "/Alsaigh_integration/")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
-# ÓÃ»§Ö¸¶¨ÑÕÉ«
+# ç”¨æˆ·æŒ‡å®šé¢œè‰²
 celltype_colors <- c(
   "Fibroblasts1" = "#B46356FF",
   "T cells1"     = "#944D40FF",
@@ -509,18 +516,18 @@ celltype_colors <- c(
 )
 
 # ============================================================================
-# 1. ÏÂÔØ Alsaigh 2022 Êı¾İ (GSE159677)
+# 1. ä¸‹è½½ Alsaigh 2022 æ•°æ® (GSE159677)
 # ============================================================================
 cat("\n========== Step 1: Downloading Alsaigh 2022 data ==========\n")
 
-# GEO Êı¾İÏÂÔØ£¨Ê×´ÎÅÜ»áÏÂÔØ£¬~500 MB-1 GB£©
+# GEO æ•°æ®ä¸‹è½½ï¼ˆé¦–æ¬¡è·‘ä¼šä¸‹è½½ï¼Œ~500 MB-1 GBï¼‰
 download_dir <- paste0(out_dir, "GSE159677_raw/")
 dir.create(download_dir, showWarnings = FALSE)
 
-# ·½·¨ 1£ºÓÃ GEOquery ×Ô¶¯ÏÂÔØ
-# (Èç¹ûÊ§°Ü£¬Ìøµ½·½·¨ 2 ÊÖ¶¯ÏÂÔØ)
+# æ–¹æ³• 1ï¼šç”¨ GEOquery è‡ªåŠ¨ä¸‹è½½
+# (å¦‚æœå¤±è´¥ï¼Œè·³åˆ°æ–¹æ³• 2 æ‰‹åŠ¨ä¸‹è½½)
 tryCatch({
-  options(timeout = 600)  # ÑÓ³¤³¬Ê±Ê±¼ä
+  options(timeout = 600)  # å»¶é•¿è¶…æ—¶æ—¶é—´
   
   if (!file.exists(paste0(download_dir, "GSE159677_RAW.tar"))) {
     cat("Downloading GSE159677_RAW.tar (~500MB)...\n")
@@ -534,24 +541,24 @@ tryCatch({
       mode = "wb")
   }
   
-  # ½âÑ¹
+  # è§£å‹
   if (!dir.exists(paste0(download_dir, "GSE159677_extracted"))) {
     untar(paste0(download_dir, "GSE159677_RAW.tar"),
           exdir = paste0(download_dir, "GSE159677_extracted"))
   }
   
 }, error = function(e) {
-  cat("\n!!! ×Ô¶¯ÏÂÔØÊ§°Ü !!!\n")
-  cat("ÇëÊÖ¶¯ÏÂÔØ£º\n")
-  cat("1. ·ÃÎÊ https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE159677\n")
-  cat("2. µã»÷ 'http' ÏÂ·½µÄ GSE159677_RAW.tar\n")
-  cat("3. ÏÂÔØµ½£º", download_dir, "\n")
-  cat("4. ½âÑ¹µ½£º", paste0(download_dir, "GSE159677_extracted"), "\n")
-  cat("5. ÖØĞÂÔËĞĞ´Ë½Å±¾\n")
+  cat("\n!!! è‡ªåŠ¨ä¸‹è½½å¤±è´¥ !!!\n")
+  cat("è¯·æ‰‹åŠ¨ä¸‹è½½ï¼š\n")
+  cat("1. è®¿é—® https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE159677\n")
+  cat("2. ç‚¹å‡» 'http' ä¸‹æ–¹çš„ GSE159677_RAW.tar\n")
+  cat("3. ä¸‹è½½åˆ°ï¼š", download_dir, "\n")
+  cat("4. è§£å‹åˆ°ï¼š", paste0(download_dir, "GSE159677_extracted"), "\n")
+  cat("5. é‡æ–°è¿è¡Œæ­¤è„šæœ¬\n")
   stop("Manual download required")
 })
 
-# ÁĞ³ö½âÑ¹ºóµÄÎÄ¼ş
+# åˆ—å‡ºè§£å‹åçš„æ–‡ä»¶
 extracted_files <- list.files(paste0(download_dir, "GSE159677_extracted"), 
                               pattern = "\\.h5$|\\.gz$", full.names = TRUE)
 cat("\nExtracted files:\n")
@@ -559,19 +566,19 @@ print(extracted_files)
 
 
 # ============================================================================
-# 2. ¼ÓÔØ Alsaigh 2022 ¡ª 6 ¸öÑù±¾ (3 »¼Õß ¡Á AC/PA)
+# 2. åŠ è½½ Alsaigh 2022 â€” 6 ä¸ªæ ·æœ¬ (3 æ‚£è€… Ã— AC/PA)
 # ============================================================================
 cat("\n========== Step 2: Extracting and Loading Alsaigh samples ==========\n")
 
 alsaigh_samples <- list()
-ext_dir <- "G:/13sample/Alsaigh_integration/GSE159677_raw/GSE159677_extracted/"
+ext_dir <- paste0(getOption("cea.project_root"), "/Alsaigh_integration/GSE159677_raw/GSE159677_extracted/")
 
-# 1. ÕÒµ½ËùÓĞÕæÕı°üº¬±í´ï¾ØÕóµÄÑ¹Ëõ°ü (ÅÅ³ı moleculeinfo)
+# 1. æ‰¾åˆ°æ‰€æœ‰çœŸæ­£åŒ…å«è¡¨è¾¾çŸ©é˜µçš„å‹ç¼©åŒ… (æ’é™¤ moleculeinfo)
 tar_files <- list.files(ext_dir, pattern = "featurebcmatrixfiltered\\.tar\\.gz$", full.names = TRUE)
 cat("Found", length(tar_files), "matrix archives.\n")
 
 for (t in tar_files) {
-  # ÌáÈ¡ GSM ±àºÅ
+  # æå– GSM ç¼–å·
   gsm_m <- regexpr("GSM[0-9]+", basename(t))
   gsm_id <- regmatches(basename(t), gsm_m)
   
@@ -579,37 +586,37 @@ for (t in tar_files) {
   
   sample_dir <- file.path(ext_dir, gsm_id)
   
-  # 2. ½âÑ¹Ñ¹Ëõ°ü
+  # 2. è§£å‹å‹ç¼©åŒ…
   if (!dir.exists(sample_dir) || length(list.files(sample_dir)) == 0) {
     dir.create(sample_dir, showWarnings = FALSE)
     cat("Extracting", basename(t), "...\n")
     untar(t, exdir = sample_dir)
   }
   
-  # 3. Éî¶ÈÑ°ÕÒ¾ØÕóÎÄ¼ş (ÎŞÊÓËü½âÑ¹ºó¿ÉÄÜÇ¶Ì×ÁË¼¸²ãÎÄ¼ş¼Ğ)
+  # 3. æ·±åº¦å¯»æ‰¾çŸ©é˜µæ–‡ä»¶ (æ— è§†å®ƒè§£å‹åå¯èƒ½åµŒå¥—äº†å‡ å±‚æ–‡ä»¶å¤¹)
   matrix_files <- list.files(sample_dir, pattern = "matrix\\.mtx", recursive = TRUE, full.names = TRUE)
   
   if (length(matrix_files) > 0) {
-    # ÕæÕıµÄ¶ÁÈ¡Ä¿Â¼ÊÇ matrix.mtx ËùÔÚµÄÄÇ¸öÎÄ¼ş¼Ğ
+    # çœŸæ­£çš„è¯»å–ç›®å½•æ˜¯ matrix.mtx æ‰€åœ¨çš„é‚£ä¸ªæ–‡ä»¶å¤¹
     true_data_dir <- dirname(matrix_files[1])
     
-    # 4. ±©Á¦ĞŞ¸´ÎÄ¼şÃû£ºÈ¥³ı¸÷ÖÖÆæÆæ¹Ö¹ÖµÄÇ°×º£¬Ç¿ĞĞ¸Ä³É Seurat ÈÏÊ¶µÄÃû×Ö
+    # 4. æš´åŠ›ä¿®å¤æ–‡ä»¶åï¼šå»é™¤å„ç§å¥‡å¥‡æ€ªæ€ªçš„å‰ç¼€ï¼Œå¼ºè¡Œæ”¹æˆ Seurat è®¤è¯†çš„åå­—
     all_files <- list.files(true_data_dir, full.names = TRUE)
     for (f in all_files) {
       base_name <- basename(f)
-      # Èç¹ûÃû×ÖÀï°üº¬ barcodes/features/genes/matrix£¬¾Í°ÑÇ°ÃæµÄÂÒÆß°ËÔãÇ°×º¶¼É¾µô
+      # å¦‚æœåå­—é‡ŒåŒ…å« barcodes/features/genes/matrixï¼Œå°±æŠŠå‰é¢çš„ä¹±ä¸ƒå…«ç³Ÿå‰ç¼€éƒ½åˆ æ‰
       if (grepl("barcodes|features|genes|matrix", base_name, ignore.case = TRUE)) {
         new_name <- gsub(".*(barcodes|features|genes|matrix)", "\\1", base_name, ignore.case = TRUE)
-        new_name <- gsub("genes", "features", new_name, ignore.case = TRUE) # ¼æÈİ Seurat V3+ ÒªÇó
+        new_name <- gsub("genes", "features", new_name, ignore.case = TRUE) # å…¼å®¹ Seurat V3+ è¦æ±‚
         
-        # Ö´ĞĞÖØÃüÃû
+        # æ‰§è¡Œé‡å‘½å
         if (base_name != new_name) {
           file.rename(f, file.path(true_data_dir, new_name))
         }
       }
     }
     
-    # 5. Ó³ÉäÁÙ´²±êÇ©
+    # 5. æ˜ å°„ä¸´åºŠæ ‡ç­¾
     if (gsm_id == "GSM4837523") { meta_name <- "AC1"; tissue <- "plaque" }
     else if (gsm_id == "GSM4837524") { meta_name <- "PA1"; tissue <- "control" }
     else if (gsm_id == "GSM4837525") { meta_name <- "AC2"; tissue <- "plaque" }
@@ -620,7 +627,7 @@ for (t in tar_files) {
     
     cat("Loading", meta_name, "from", true_data_dir, "...\n")
     
-    # 6. ¶ÁÈ¡²¢´´½¨ Seurat ¶ÔÏó
+    # 6. è¯»å–å¹¶åˆ›å»º Seurat å¯¹è±¡
     tryCatch({
       counts <- Read10X(data.dir = true_data_dir)
       obj <- CreateSeuratObject(counts = counts, project = meta_name,
@@ -646,7 +653,7 @@ cat("Successfully loaded", length(alsaigh_samples), "Alsaigh samples.\n")
 if (length(alsaigh_samples) > 0) {
   cat("Total cells (Alsaigh):", sum(sapply(alsaigh_samples, ncol)), "\n\n")
   
-  # ºÏ²¢ Alsaigh 6 ¸öÑù±¾
+  # åˆå¹¶ Alsaigh 6 ä¸ªæ ·æœ¬
   alsaigh_merged <- merge(alsaigh_samples[[1]], 
                           y = alsaigh_samples[-1],
                           add.cell.ids = names(alsaigh_samples))
@@ -665,24 +672,24 @@ if (length(alsaigh_samples) > 0) {
 
 
 ## ============================================================================
-# 3.5 ÄÚ´æÓÅ»¯£º¶ÔÏóÊİÉíÓë¾ùºâ½µ²ÉÑù (ÔÚºÏ²¢Ç°Ö´ĞĞ)
+# 3.5 å†…å­˜ä¼˜åŒ–ï¼šå¯¹è±¡ç˜¦èº«ä¸å‡è¡¡é™é‡‡æ · (åœ¨åˆå¹¶å‰æ‰§è¡Œ)
 # ============================================================================
 cat("\n========== Step 3.5: Diet and Downsampling for memory limit ==========\n")
 
-# 1. ¼«ÏŞÊİÉí (DietSeurat)£º
-# ÄúµÄÔ­¶ÔÏó¿ÉÄÜ×Ô´øÁËÒÔÇ°ÅÜ¹ıµÄ SCT/integrated assays£¬ÒÔ¼°ÅÓ´óµÄ PCA/UMAP Êı¾İ¡£
-# ÕâĞ©ÔÚÖØĞÂÕûºÏÊ±¶¼²»ĞèÒªÁË£¬¹û¶ÏÌŞ³ı£¬Ö»±£Áô×î¸É¾»µÄ RNA counts ¾ØÕó¡£
+# 1. æé™ç˜¦èº« (DietSeurat)ï¼š
+# æ‚¨çš„åŸå¯¹è±¡å¯èƒ½è‡ªå¸¦äº†ä»¥å‰è·‘è¿‡çš„ SCT/integrated assaysï¼Œä»¥åŠåºå¤§çš„ PCA/UMAP æ•°æ®ã€‚
+# è¿™äº›åœ¨é‡æ–°æ•´åˆæ—¶éƒ½ä¸éœ€è¦äº†ï¼Œæœæ–­å‰”é™¤ï¼Œåªä¿ç•™æœ€å¹²å‡€çš„ RNA counts çŸ©é˜µã€‚
 your_obj <- DietSeurat(your_obj, assays = "RNA", dimreducs = NULL)
 alsaigh_merged <- DietSeurat(alsaigh_merged, assays = "RNA", dimreducs = NULL)
-gc() # Ç¿ÖÆ»ØÊÕÄÚ´æ
+gc() # å¼ºåˆ¶å›æ”¶å†…å­˜
 
-# 2. ¾ùºâ½µ²ÉÑù (Stratified Downsampling)£º
-# ¸ù¾İÄúµÄÏ¸°û×¢ÊÍ£¬Ã¿¸öÏ¸°ûÑÇÈº×î¶àËæ»ú³éÈ¡ 2500 ¸öÏ¸°û±£Áô¡£
-# £¨Ï¸°ûÊı²»µ½ 2500 µÄÑÇÈº£¬ÈçÉÙÁ¿µÄ ECs »òÌØ¶¨ÃâÒßÏ¸°û£¬»á±» 100% ÍêÕû±£Áô£©
+# 2. å‡è¡¡é™é‡‡æ · (Stratified Downsampling)ï¼š
+# æ ¹æ®æ‚¨çš„ç»†èƒæ³¨é‡Šï¼Œæ¯ä¸ªç»†èƒäºšç¾¤æœ€å¤šéšæœºæŠ½å– 2500 ä¸ªç»†èƒä¿ç•™ã€‚
+# ï¼ˆç»†èƒæ•°ä¸åˆ° 2500 çš„äºšç¾¤ï¼Œå¦‚å°‘é‡çš„ ECs æˆ–ç‰¹å®šå…ç–«ç»†èƒï¼Œä¼šè¢« 100% å®Œæ•´ä¿ç•™ï¼‰
 Idents(your_obj) <- "celltype"
 your_obj <- subset(your_obj, downsample = 2500)
 
-# ¶Ô Alsaigh Êı¾İÒ²°´Ñù±¾½øĞĞÒ»¶¨³Ì¶ÈµÄ³éÑù£¨Ã¿¸öÑù±¾×î¶à±£Áô 5000 ¸öÏ¸°û£¬6¸öÑù±¾×î¶à3Íò£©
+# å¯¹ Alsaigh æ•°æ®ä¹ŸæŒ‰æ ·æœ¬è¿›è¡Œä¸€å®šç¨‹åº¦çš„æŠ½æ ·ï¼ˆæ¯ä¸ªæ ·æœ¬æœ€å¤šä¿ç•™ 5000 ä¸ªç»†èƒï¼Œ6ä¸ªæ ·æœ¬æœ€å¤š3ä¸‡ï¼‰
 Idents(alsaigh_merged) <- "orig.ident"
 alsaigh_merged <- subset(alsaigh_merged, downsample = 5000)
 
@@ -692,11 +699,11 @@ cat("Alsaigh dataset reduced to:", ncol(alsaigh_merged), "cells\n")
 gc()
 
 # ============================================================================
-# 4. ºÏ²¢Á½¸öÊı¾İ¼¯
+# 4. åˆå¹¶ä¸¤ä¸ªæ•°æ®é›†
 
 cat("\n========== Step 4: Merging two datasets ==========\n")
 
-# ×ª»»Îª V4 Assay£¬³¹µ×¹æ±Ü V5 JoinLayers µÄÄÚ´æºÚ¶´
+# è½¬æ¢ä¸º V4 Assayï¼Œå½»åº•è§„é¿ V5 JoinLayers çš„å†…å­˜é»‘æ´
 your_obj[["RNA"]] <- as(your_obj[["RNA"]], "Assay")
 alsaigh_merged[["RNA"]] <- as(alsaigh_merged[["RNA"]], "Assay")
 gc()
@@ -705,23 +712,23 @@ cat("Merging matrices...\n")
 combined <- merge(your_obj, y = alsaigh_merged, 
                   add.cell.ids = c("our", "alsaigh"))
 
-# ºÏ²¢ºóÁ¢¼´Ïú»ÙÔ­¶ÔÏó£¬ÊÍ·Å¾Ş´ó¿Õ¼ä¸øºóĞøµÄ ScaleData ºÍ PCA
+# åˆå¹¶åç«‹å³é”€æ¯åŸå¯¹è±¡ï¼Œé‡Šæ”¾å·¨å¤§ç©ºé—´ç»™åç»­çš„ ScaleData å’Œ PCA
 rm(your_obj, alsaigh_merged)
 gc()
 
 cat("Merged total cells:", ncol(combined), "\n")
 print(table(combined$dataset))
 
-# ±ê×¼»¯ + ¸ß±ä»ùÒò
+# æ ‡å‡†åŒ– + é«˜å˜åŸºå› 
 cat("\nNormalizing + finding variable features...\n")
 combined <- NormalizeData(combined, verbose = FALSE)
 combined <- FindVariableFeatures(combined, nfeatures = 3000, verbose = FALSE)
 
-# ÔÙ´ÎÄÚ´æ±£»¤£ºScaleData Ö»¶Ô¸ß±ä»ùÒò½øĞĞ scale£¬²» scale ËùÓĞ»ùÒò£¨´ó´ó½ÚÊ¡ÄÚ´æ£©
+# å†æ¬¡å†…å­˜ä¿æŠ¤ï¼šScaleData åªå¯¹é«˜å˜åŸºå› è¿›è¡Œ scaleï¼Œä¸ scale æ‰€æœ‰åŸºå› ï¼ˆå¤§å¤§èŠ‚çœå†…å­˜ï¼‰
 combined <- ScaleData(combined, features = VariableFeatures(combined), verbose = FALSE)
 combined <- RunPCA(combined, npcs = 30, verbose = FALSE)
 
-# 5. ¡ï¡ï¡ï Harmony ÕûºÏ£¨
+# 5. â˜…â˜…â˜… Harmony æ•´åˆï¼ˆ
 # ============================================================================
 cat("\n========== Step 5: Harmony integration ==========\n")
 
@@ -729,35 +736,35 @@ cat("\n========== Step 5: Harmony integration ==========\n")
 library(harmony)
 library(patchwork)
 
-# ÔËĞĞ Harmony Ïû³ıÊı¾İ¼¯Ö®¼äµÄÅú´ÎĞ§Ó¦
+# è¿è¡Œ Harmony æ¶ˆé™¤æ•°æ®é›†ä¹‹é—´çš„æ‰¹æ¬¡æ•ˆåº”
 combined <- RunHarmony(combined, 
                        group.by.vars = "dataset",
                        reduction.use = "pca",
-                       theta = 2,              # theta=2 ÊÊ¶È¶ÔÆë£¬·ÀÖ¹¹ı¶È½ÃÕıÄ¨É±ÉúÎïÑ§²îÒì
-                       max_iter = 20,          # ¡¾ĞŞ¸Äµã¡¿£º½« max.iter.harmony ¸ÄÎª max_iter
+                       theta = 2,              # theta=2 é€‚åº¦å¯¹é½ï¼Œé˜²æ­¢è¿‡åº¦çŸ«æ­£æŠ¹æ€ç”Ÿç‰©å­¦å·®å¼‚
+                       max_iter = 20,          # ã€ä¿®æ”¹ç‚¹ã€‘ï¼šå°† max.iter.harmony æ”¹ä¸º max_iter
                        verbose = FALSE)
 
-# Ê¹ÓÃ Harmony ½µÎ¬½á¹û¼ÆËã UMAP ºÍ¾ÛÀà
+# ä½¿ç”¨ Harmony é™ç»´ç»“æœè®¡ç®— UMAP å’Œèšç±»
 cat("Running UMAP and Clustering...\n")
 combined <- RunUMAP(combined, reduction = "harmony", dims = 1:30, verbose = FALSE)
 combined <- FindNeighbors(combined, reduction = "harmony", dims = 1:30, verbose = FALSE)
 combined <- FindClusters(combined, resolution = 0.5, verbose = FALSE)
 
 
-# 6. ¡ï¡ï¡ï Fig 1F Ö÷MAP ÈıÕÅ²¢ÅÅ
+# 6. â˜…â˜…â˜… Fig 1F ä¸»MAP ä¸‰å¼ å¹¶æ’
 # ============================================================================
 cat("\n========== Step 6: Generating Fig 1F UMAP ==========\n")
 
-# Panel 1: °´Êı¾İ¼¯
+# Panel 1: æŒ‰æ•°æ®é›†
 p1 <- DimPlot(combined, reduction = "umap",
               group.by = "dataset",
-              cols = c("Our_study" = "#C71000FF",  # ºì
-                       "Alsaigh_2022" = "#008EA0FF"),  # Çà
+              cols = c("Our_study" = "#C71000FF",  # çº¢
+                       "Alsaigh_2022" = "#008EA0FF"),  # é’
               pt.size = 0.3, raster = FALSE) +
   ggtitle("By dataset (after Harmony)") +
   theme(plot.title = element_text(face = "bold", size = 14))
 
-# Panel 2: °´ÄúµÄ cell type ×¢ÊÍ£¨½öÄúµÄÏ¸°û£©
+# Panel 2: æŒ‰æ‚¨çš„ cell type æ³¨é‡Šï¼ˆä»…æ‚¨çš„ç»†èƒï¼‰
 your_celltype <- combined$celltype
 your_celltype[combined$dataset == "Alsaigh_2022"] <- NA
 
@@ -771,7 +778,7 @@ p2 <- DimPlot(combined, reduction = "umap",
   ggtitle("Our cell types\n(grey = Alsaigh cells)") +
   theme(plot.title = element_text(face = "bold", size = 14))
 
-# Panel 3: °´ÕûºÏºóµÄĞÂ cluster
+# Panel 3: æŒ‰æ•´åˆåçš„æ–° cluster
 p3 <- DimPlot(combined, reduction = "umap",
               group.by = "seurat_clusters",
               label = TRUE, label.size = 4,
@@ -780,7 +787,7 @@ p3 <- DimPlot(combined, reduction = "umap",
   theme(plot.title = element_text(face = "bold", size = 14),
         legend.position = "none")
 
-# Æ´½ÓÖ÷Í¼
+# æ‹¼æ¥ä¸»å›¾
 fig1F_main <- p1 | p2 | p3 +
   plot_annotation(
     title = "Fig 1F. Integration with Alsaigh 2022 (GSE159677)",
@@ -801,7 +808,7 @@ cat("??? Saved Fig1F_integrated_UMAP.pdf\n")
 # ============================================================================
 cat("\n========== Step 7: Cell type concordance ==========\n")
 
-# °ÑÄúÃ¿¸ö cell type µÄÏ¸°û·Öµ½ÕûºÏºóµÄ cluster Àï£¬¿´·Ö²¼
+# æŠŠæ‚¨æ¯ä¸ª cell type çš„ç»†èƒåˆ†åˆ°æ•´åˆåçš„ cluster é‡Œï¼Œçœ‹åˆ†å¸ƒ
 concordance_df <- combined@meta.data %>%
   filter(!is.na(your_celltype)) %>%
   group_by(your_celltype, seurat_clusters) %>%
@@ -828,7 +835,7 @@ ggsave(paste0(out_dir, "Fig1F_celltype_concordance.png"), p_concordance,
        width = 9, height = 7, dpi = 300)
 
 
-# 8. Marker ±í´ïÒ»ÖÂĞÔ£¨POSTN/TREM2/ACTA2 ÔÚÁ½Êı¾İ¼¯ÖĞ¶¼ÕıÈ·¶¨Î»£©
+# 8. Marker è¡¨è¾¾ä¸€è‡´æ€§ï¼ˆPOSTN/TREM2/ACTA2 åœ¨ä¸¤æ•°æ®é›†ä¸­éƒ½æ­£ç¡®å®šä½ï¼‰
 # ============================================================================
 cat("\n========== Step 8: Marker concordance ==========\n")
 
@@ -840,7 +847,7 @@ key_markers <- c("ACTA2","MYH11",       # SMC contractile
 
 key_markers <- intersect(key_markers, rownames(combined))
 
-# °´Êı¾İ¼¯·Ö±ğ»­ FeaturePlot
+# æŒ‰æ•°æ®é›†åˆ†åˆ«ç”» FeaturePlot
 gene_panels <- list()
 for (g in key_markers) {
   
@@ -877,11 +884,11 @@ ggsave(paste0(out_dir, "Fig1F_marker_concordance.png"), p_marker_concord,
 
 
 # ============================================================================
-# 9. thology vs Symptom ·Ö×é¶Ô±È
+# 9. thology vs Symptom åˆ†ç»„å¯¹æ¯”
 cat("\n========== Step 9: Pathology vs Symptom comparison ==========\n")
 
 
-# ¼ÆËãÁ½¸ö healing markers (POSTN+TREM2) µÄ module score
+# è®¡ç®—ä¸¤ä¸ª healing markers (POSTN+TREM2) çš„ module score
 healing_markers <- list(
   fibroblast_healing = c("POSTN","TNC","COL1A1","COL3A1","LOXL2"),
   TREM2_LAM = c("TREM2","CD9","FOLR2","CD163","CTSD"))
@@ -890,7 +897,7 @@ combined <- AddModuleScore(combined, features = healing_markers,
                            name = c("FibroHealing","TREM2_LAM"),
                            search = TRUE)
 
-# Plot 1: °´ tissue_type(ÀàËÆ Alsaigh Éè¼Æ)
+# Plot 1: æŒ‰ tissue_type(ç±»ä¼¼ Alsaigh è®¾è®¡)
 plot_data_tissue <- combined@meta.data %>%
   filter(!is.na(tissue_type)) %>%
   dplyr::select(tissue_type, dataset, FibroHealing1, TREM2_LAM2)
@@ -909,11 +916,11 @@ p_tissue_healing <- ggplot(plot_data_tissue,
   theme(legend.position = "none",
         plot.title = element_text(face = "bold", size = 12))
 
-# Plot 2: °´ pathology group (½öÄúµÄÊı¾İ)
+# Plot 2: æŒ‰ pathology group (ä»…æ‚¨çš„æ•°æ®)
 plot_data_path <- combined@meta.data %>%
   filter(dataset == "Our_study", !is.na(group))
 
-# ÅÅĞò
+# æ’åº
 plot_data_path$group <- factor(plot_data_path$group, 
                                levels = c("ASYM","SYM"))
 
@@ -930,7 +937,7 @@ p_path_healing <- ggplot(plot_data_path,
   theme(legend.position = "none",
         plot.title = element_text(face = "bold", size = 12))
 
-# TREM2 module score Í¬Ñù
+# TREM2 module score åŒæ ·
 p_tissue_lam <- ggplot(plot_data_tissue,
                        aes(x = tissue_type, y = TREM2_LAM2, fill = tissue_type)) +
   geom_violin(trim = FALSE, alpha = 0.8) +
@@ -957,7 +964,7 @@ p_path_lam <- ggplot(plot_data_path,
   theme(legend.position = "none",
         plot.title = element_text(face = "bold", size = 12))
 
-# Æ´½Ó
+# æ‹¼æ¥
 fig1F_path_vs_sym <- (p_tissue_healing | p_path_healing) /
   (p_tissue_lam | p_path_lam) +
   plot_annotation(
@@ -969,20 +976,20 @@ ggsave(paste0(out_dir, "Fig1F_pathology_vs_symptom.pdf"), fig1F_path_vs_sym,
 ggsave(paste0(out_dir, "Fig1F_pathology_vs_symptom.png"), fig1F_path_vs_sym,
        width = 14, height = 11, dpi = 300)
 
-cat("??? Saved Fig1F_pathology_vs_symptom.pdf (ºËĞÄ·½·¨Ñ§Ö¤¾İÍ¼)\n")
+cat("??? Saved Fig1F_pathology_vs_symptom.pdf (æ ¸å¿ƒæ–¹æ³•å­¦è¯æ®å›¾)\n")
 
 
-# 10. Í³¼Æ¼ìÑé + ±¨¸æ
+# 10. ç»Ÿè®¡æ£€éªŒ + æŠ¥å‘Š
 
-# Wilcoxon ¼ìÑé
+# Wilcoxon æ£€éªŒ
 wilcox_tissue <- wilcox.test(
   FibroHealing1 ~ tissue_type,
   data = plot_data_tissue[plot_data_tissue$dataset == "Our_study", ])
 
-# Kruskal-Wallis£¨¶à×é£©
+# Kruskal-Wallisï¼ˆå¤šç»„ï¼‰
 kw_path <- kruskal.test(FibroHealing1 ~ group, data = plot_data_path)
 
-# ±¨¸æ
+# æŠ¥å‘Š
 sink(paste0(out_dir, "Integration_REPORT.txt"))
 
 cat("=================================================================\n")
@@ -1009,21 +1016,21 @@ cat("  By pathology (our design): Kruskal-Wallis P =",
 
 cat("--- INTERPRETATION ---\n")
 cat("If pathology grouping yields LOWER P-value than tissue grouping:\n")
-cat("  ¡ú Pathology-anchored design has BETTER discrimination power\n")
-cat("  ¡ú This is the methodological advantage of our study\n\n")
+cat("  â†’ Pathology-anchored design has BETTER discrimination power\n")
+cat("  â†’ This is the methodological advantage of our study\n\n")
 
 cat("--- FIGURES ---\n")
-cat("????????? Fig1F_pathology_vs_symptom.pdf (ºËĞÄ·½·¨Ñ§Ö¤¾İ)\n")
-cat("?????? Fig1F_integrated_UMAP.pdf (Ö÷Í¼)\n")
-cat("?????? Fig1F_celltype_concordance.pdf (Ò»ÖÂĞÔÖ¤¾İ)\n")
-cat("??? Fig1F_marker_concordance.pdf (Marker Ò»ÖÂĞÔ)\n")
+cat("????????? Fig1F_pathology_vs_symptom.pdf (æ ¸å¿ƒæ–¹æ³•å­¦è¯æ®)\n")
+cat("?????? Fig1F_integrated_UMAP.pdf (ä¸»å›¾)\n")
+cat("?????? Fig1F_celltype_concordance.pdf (ä¸€è‡´æ€§è¯æ®)\n")
+cat("??? Fig1F_marker_concordance.pdf (Marker ä¸€è‡´æ€§)\n")
 
 sink()
 
-# ±£´æÕûºÏ¶ÔÏó
+# ä¿å­˜æ•´åˆå¯¹è±¡
 saveRDS(combined, paste0(out_dir, "integrated_obj_with_Alsaigh.rds"))
 
-#Pathology vs Symptom ¶Ô±ÈÍ¼ ¡ª ÏŞ¶¨ÔÚÏà¹ØÏ¸°ûÈºÖĞ±È½Ï
+#Pathology vs Symptom å¯¹æ¯”å›¾ â€” é™å®šåœ¨ç›¸å…³ç»†èƒç¾¤ä¸­æ¯”è¾ƒ
 
 suppressMessages({
   library(Seurat)
@@ -1031,38 +1038,38 @@ suppressMessages({
   library(dplyr)
   library(patchwork)
 })
-out_dir <- "G:/13sample/Alsaigh_integration/"
+out_dir <- paste0(getOption("cea.project_root"), "/Alsaigh_integration/")
 
-# ¹Ø¼ü£ºÖ»ÔÚ fibroblast/SMC ÈºÌåÖĞÆÀ¹À fibroblast healing
-#       Ö»ÔÚ macrophage ÈºÌåÖĞÆÀ¹À TREM2+ LAM
+# å…³é”®ï¼šåªåœ¨ fibroblast/SMC ç¾¤ä½“ä¸­è¯„ä¼° fibroblast healing
+#       åªåœ¨ macrophage ç¾¤ä½“ä¸­è¯„ä¼° TREM2+ LAM
 # ============================================================================
 
-# °ÑÄúµÄ cell type ĞÅÏ¢Ò²¼Ó¸ø Alsaigh Ï¸°û£¨»ùÓÚÕûºÏ cluster£©
-# Cluster 3 = Fibroblasts£¬Cluster 0/1 = T cells£¬µÈµÈ
-# ÎÒÃÇÓÃÕûºÏ cluster À´·ÖÀàÏ¸°ûÀàĞÍ
+# æŠŠæ‚¨çš„ cell type ä¿¡æ¯ä¹ŸåŠ ç»™ Alsaigh ç»†èƒï¼ˆåŸºäºæ•´åˆ clusterï¼‰
+# Cluster 3 = Fibroblastsï¼ŒCluster 0/1 = T cellsï¼Œç­‰ç­‰
+# æˆ‘ä»¬ç”¨æ•´åˆ cluster æ¥åˆ†ç±»ç»†èƒç±»å‹
 
-# ¸ù¾İ concordance ÈÈÍ¼£¬¶¨Òå´óÀà
+# æ ¹æ® concordance çƒ­å›¾ï¼Œå®šä¹‰å¤§ç±»
 fibroblast_smc_clusters <- c("3","5","7","9","11","12","16","20")  # SMCs+Fibroblasts
 macrophage_clusters     <- c("4","6","13","14")                       # Macro+Mono+DC
 
-# ÌáÈ¡Ïà¹ØÏ¸°û×ö·ÖÎö
+# æå–ç›¸å…³ç»†èƒåšåˆ†æ
 combined$broad_type <- "Other"
 combined$broad_type[combined$seurat_clusters %in% fibroblast_smc_clusters] <- "Fibroblast_SMC"
 combined$broad_type[combined$seurat_clusters %in% macrophage_clusters]     <- "Macrophage"
 
-# ¼ì²éÊıÁ¿
+# æ£€æŸ¥æ•°é‡
 cat("Cell counts by broad type:\n")
 print(table(combined$broad_type))
 
 # ============================================================================
-# Plot 1: Fibroblast healing ¡ª ½öÔÚ Fibroblast/SMC ÖĞ±È½Ï
+# Plot 1: Fibroblast healing â€” ä»…åœ¨ Fibroblast/SMC ä¸­æ¯”è¾ƒ
 # ============================================================================
 
-# Êı¾İ×Ó¼¯£º½ö fibroblast/SMC Ï¸°û
+# æ•°æ®å­é›†ï¼šä»… fibroblast/SMC ç»†èƒ
 fibro_data <- combined@meta.data %>%
   filter(broad_type == "Fibroblast_SMC")
 
-# Alsaigh µÄ£ºtissue_type (control vs plaque)
+# Alsaigh çš„ï¼štissue_type (control vs plaque)
 fibro_alsaigh <- fibro_data %>%
   filter(dataset == "Alsaigh_2022")
 
@@ -1080,13 +1087,13 @@ p_alsaigh_fibro <- ggplot(fibro_alsaigh,
   theme(legend.position = "none",
         plot.title = element_text(face = "bold", size = 12))
 
-# Ìí¼ÓÍ³¼Æ P Öµ
+# æ·»åŠ ç»Ÿè®¡ P å€¼
 p_val_alsaigh <- wilcox.test(FibroHealing1 ~ tissue_type, data = fibro_alsaigh)$p.value
 p_alsaigh_fibro <- p_alsaigh_fibro +
   labs(caption = paste0("Wilcoxon P = ", format.pval(p_val_alsaigh, digits = 3)))
 
 
-# ÄúµÄ£ºpathology (ASYM/SYM)
+# æ‚¨çš„ï¼špathology (ASYM/SYM)
 fibro_ours <- fibro_data %>%
   filter(dataset == "Our_study", !is.na(group))
 fibro_ours$group <- factor(fibro_ours$group, levels = c("ASYM","SYM"))
@@ -1105,20 +1112,20 @@ p_ours_fibro <- ggplot(fibro_ours,
   theme(legend.position = "none",
         plot.title = element_text(face = "bold", size = 12))
 
-# Ìí¼ÓÍ³¼Æ P Öµ
+# æ·»åŠ ç»Ÿè®¡ P å€¼
 p_val_ours <- kruskal.test(FibroHealing1 ~ group, data = fibro_ours)$p.value
 p_ours_fibro <- p_ours_fibro +
   labs(caption = paste0("Kruskal-Wallis P = ", format.pval(p_val_ours, digits = 3)))
 
 
 # ============================================================================
-# Plot 2: TREM2+ LAM ¡ª ½öÔÚ Macrophage ÖĞ±È½Ï
+# Plot 2: TREM2+ LAM â€” ä»…åœ¨ Macrophage ä¸­æ¯”è¾ƒ
 # ============================================================================
 
 mac_data <- combined@meta.data %>%
   filter(broad_type == "Macrophage")
 
-# Alsaigh µÄ
+# Alsaigh çš„
 mac_alsaigh <- mac_data %>%
   filter(dataset == "Alsaigh_2022")
 
@@ -1140,7 +1147,7 @@ p_alsaigh_lam <- p_alsaigh_lam +
   labs(caption = paste0("Wilcoxon P = ", format.pval(p_val_alsaigh_lam, digits = 3)))
 
 
-# ÄúµÄ
+# æ‚¨çš„
 mac_ours <- mac_data %>%
   filter(dataset == "Our_study", !is.na(group))
 mac_ours$group <- factor(mac_ours$group, levels = c("ASYM","SYM"))
@@ -1165,7 +1172,7 @@ p_ours_lam <- p_ours_lam +
 
 
 # ============================================================================
-# Æ´½Ó + ±£´æ
+# æ‹¼æ¥ + ä¿å­˜
 # ============================================================================
 fig1F_v2 <- (p_alsaigh_fibro | p_ours_fibro) /
   (p_alsaigh_lam   | p_ours_lam) +
@@ -1182,11 +1189,11 @@ ggsave(paste0(out_dir, "Fig1F_pathology_vs_symptom_FIXED.png"), fig1F_v2,
 
 cat("\n??? Saved Fig1F_pathology_vs_symptom_FIXED.pdf\n")
 
-# Åú´ÎÑéÖ¤: (1) °´13Ñù±¾ÉÏÉ«µÄ tSNE  (2) cluster ¡Á sample Ï¸°ûÊı¾ØÕó
-#¼ÓÔØ°ü
+# æ‰¹æ¬¡éªŒè¯: (1) æŒ‰13æ ·æœ¬ä¸Šè‰²çš„ tSNE  (2) cluster Ã— sample ç»†èƒæ•°çŸ©é˜µ
+#åŠ è½½åŒ…
 rm(list = ls())
 gc()
-setwd("G:/13sample/")
+setwd(paste0(getOption("cea.project_root"), "/"))
 library(Seurat)
 library(tidyverse)
 library(ggplot2)
@@ -1197,9 +1204,9 @@ combined131<- readRDS(file="combined131.rds")
 # ============================================================================
 library(Seurat); library(tidyverse); library(ggplot2)
 
-## ÏÈÈ·ÈÏÑù±¾IDÁĞÃû (³£¼û orig.ident; ÄãµÄ¶ÔÏó¿ÉÄÜ²»Í¬, ÏÈ¿´Ò»ÑÛ)
-cat("meta ÁĞÃû:\n"); print(colnames(combined131@meta.data))
-cat("\n¿ÉÄÜµÄÑù±¾ÁĞÔ¤ÀÀ:\n")
+## å…ˆç¡®è®¤æ ·æœ¬IDåˆ—å (å¸¸è§ orig.ident; ä½ çš„å¯¹è±¡å¯èƒ½ä¸åŒ, å…ˆçœ‹ä¸€çœ¼)
+cat("meta åˆ—å:\n"); print(colnames(combined131@meta.data))
+cat("\nå¯èƒ½çš„æ ·æœ¬åˆ—é¢„è§ˆ:\n")
 for (col in c("orig.ident","sample","Sample","samples")) {
   if (col %in% colnames(combined131@meta.data)) {
     cat(col, ":", paste(unique(combined131@meta.data[[col]]), collapse=", "), "\n")
@@ -1208,7 +1215,7 @@ for (col in c("orig.ident","sample","Sample","samples")) {
 
 
 # ============================================================================
-# Åú´Î tSNE ¡ª
+# æ‰¹æ¬¡ tSNE â€”
 # ============================================================================
 library(Seurat); library(tidyverse); library(ggplot2); library(ggrastr)
 
@@ -1224,11 +1231,11 @@ sample_cols <- setNames(
 df <- data.frame(combined131@reductions$tsne@cell.embeddings,
                  sample = combined131@meta.data[[sample_col]])
 colnames(df)[1:2] <- c("tSNE_1","tSNE_2")
-df <- df[sample(nrow(df)), ]   # ´òÂÒ»æÖÆË³Ğò
+df <- df[sample(nrow(df)), ]   # æ‰“ä¹±ç»˜åˆ¶é¡ºåº
 
-# ©¤©¤ (1) Ö÷Í¼: µã´óĞ¡»¹Ô­ V1 (DimPlot Ä¬ÈÏ pt.size¡Ö0.1 ÊÓ¾õ, ÕâÀïÓÃ 0.5 ½Ó½ü V1 ¹Û¸Ğ) ©¤©¤
+# â”€â”€ (1) ä¸»å›¾: ç‚¹å¤§å°è¿˜åŸ V1 (DimPlot é»˜è®¤ pt.sizeâ‰ˆ0.1 è§†è§‰, è¿™é‡Œç”¨ 0.5 æ¥è¿‘ V1 è§‚æ„Ÿ) â”€â”€
 p_main <- ggplot(df, aes(tSNE_1, tSNE_2, color = sample)) +
-  rasterise(geom_point(size = 0.5, alpha = 0.8, stroke = 0), dpi = 600) +  # ¡ï Õ¤¸ñ»¯, µãÍ¬V1´óĞ¡
+  rasterise(geom_point(size = 0.5, alpha = 0.8, stroke = 0), dpi = 600) +  # â˜… æ …æ ¼åŒ–, ç‚¹åŒV1å¤§å°
   scale_color_manual(values = sample_cols, name = "Sample") +
   labs(title = "Batch mixing across 13 samples", x = "tSNE_1", y = "tSNE_2") +
   guides(color = guide_legend(override.aes = list(size = 3, alpha = 1), ncol = 1)) +
@@ -1237,22 +1244,22 @@ p_main <- ggplot(df, aes(tSNE_1, tSNE_2, color = sample)) +
         axis.text = element_text(color = "black"),
         legend.text = element_text(size = 9))
 
-ggsave("G:/13sample/SuppFig_batch_tSNE_bySample_v3.pdf", p_main,
+ggsave(paste0(getOption("cea.project_root"), "/SuppFig_batch_tSNE_bySample_v3.pdf"), p_main,
        width = 8, height = 6, device = cairo_pdf)
-ggsave("G:/13sample/SuppFig_batch_tSNE_bySample_v3.png", p_main,
+ggsave(paste0(getOption("cea.project_root"), "/SuppFig_batch_tSNE_bySample_v3.png"), p_main,
        width = 8, height = 6, dpi = 600)
 
-# ©¤©¤ (2) split °æ: Ã¿Ñù±¾Ò»¸ñ, µ±Ç°Ñù±¾¸ßÁÁÆäÓà»Òµ× (¿´µÃÇåÃ¿¸öÑù±¾·Ö²¼) ©¤©¤
-# ¹Ø¼ü¸Ä½ø: Ã¿¸ñ»­"È«²¿Ï¸°û»ÒÉ«±³¾° + µ±Ç°Ñù±¾²ÊÉ«¸ßÁÁ", ÕâÑùÃ¿¸ñ¶¼ÄÜ¿´Çå¸ÃÑù±¾ÆÌÔÚÄÄ
-df_bg <- df %>% dplyr::select(tSNE_1, tSNE_2)   # ±³¾°: ËùÓĞÏ¸°û(ÎŞ sample ·ÖÃæ)
+# â”€â”€ (2) split ç‰ˆ: æ¯æ ·æœ¬ä¸€æ ¼, å½“å‰æ ·æœ¬é«˜äº®å…¶ä½™ç°åº• (çœ‹å¾—æ¸…æ¯ä¸ªæ ·æœ¬åˆ†å¸ƒ) â”€â”€
+# å…³é”®æ”¹è¿›: æ¯æ ¼ç”»"å…¨éƒ¨ç»†èƒç°è‰²èƒŒæ™¯ + å½“å‰æ ·æœ¬å½©è‰²é«˜äº®", è¿™æ ·æ¯æ ¼éƒ½èƒ½çœ‹æ¸…è¯¥æ ·æœ¬é“ºåœ¨å“ª
+df_bg <- df %>% dplyr::select(tSNE_1, tSNE_2)   # èƒŒæ™¯: æ‰€æœ‰ç»†èƒ(æ—  sample åˆ†é¢)
 
 p_split <- ggplot() +
   rasterise(geom_point(data = df_bg, aes(tSNE_1, tSNE_2),
-                       color = "grey88", size = 0.3, stroke = 0), dpi = 600) +  # »Ò±³¾°
+                       color = "grey88", size = 0.3, stroke = 0), dpi = 600) +  # ç°èƒŒæ™¯
   rasterise(geom_point(data = df, aes(tSNE_1, tSNE_2, color = sample),
-                       size = 0.4, stroke = 0), dpi = 600) +                    # ¸ßÁÁµ±Ç°Ñù±¾
+                       size = 0.4, stroke = 0), dpi = 600) +                    # é«˜äº®å½“å‰æ ·æœ¬
   scale_color_manual(values = sample_cols, guide = "none") +
-  facet_wrap(~ sample, ncol = 5) +                # ¡ï 5ÁĞ²¼¾Ö
+  facet_wrap(~ sample, ncol = 5) +                # â˜… 5åˆ—å¸ƒå±€
   labs(title = "Per-sample distribution (each panel: one sample highlighted)",
        x = "tSNE_1", y = "tSNE_2") +
   theme_bw(base_size = 11) +
@@ -1262,10 +1269,10 @@ p_split <- ggplot() +
         axis.text = element_blank(), axis.ticks = element_blank(),
         panel.grid = element_blank())
 
-# ¡ï »­²¼¹»´ó²ÅÄÜ¿´ÇåÃ¿¸ñ (13Ñù±¾5ÁĞ=3ĞĞ, ¸ø×ã³ß´ç)
-ggsave("G:/13sample/SuppFig_batch_tSNE_split_v3.pdf", p_split,
+# â˜… ç”»å¸ƒå¤Ÿå¤§æ‰èƒ½çœ‹æ¸…æ¯æ ¼ (13æ ·æœ¬5åˆ—=3è¡Œ, ç»™è¶³å°ºå¯¸)
+ggsave(paste0(getOption("cea.project_root"), "/SuppFig_batch_tSNE_split_v3.pdf"), p_split,
        width = 15, height = 9, device = cairo_pdf)
-ggsave("G:/13sample/SuppFig_batch_tSNE_split_v3.png", p_split,
+ggsave(paste0(getOption("cea.project_root"), "/SuppFig_batch_tSNE_split_v3.png"), p_split,
        width = 15, height = 9, dpi = 600)
 
 --------------------------------------------------------------------------------
@@ -1303,12 +1310,12 @@ suppressPackageStartupMessages({
 # 1. Paths and analysis settings
 # ==============================================================================
 
-input_rds <- "G:/13sample/Alsaigh_integration/integrated_obj_with_Alsaigh.rds"
+input_rds <- paste0(getOption("cea.project_root"), "/Alsaigh_integration/integrated_obj_with_Alsaigh.rds")
 
 # A separate output folder is used so the original figures and scripts are not
 # overwritten.
 out_dir <- file.path(
-  "G:/13sample/A ¾±¶¯Âöµ¥Ï¸°ûÎÄÕÂ/TREM2??? macrophage¨Creparative fibroblast healing axis",
+  paste0(getOption("cea.project_root"), "/A é¢ˆåŠ¨è„‰å•ç»†èƒæ–‡ç« /TREM2??? macrophageâ€“reparative fibroblast healing axis"),
   "Communications_Biology_submission/Communications_Biology_submission",
   "Fig1GH_donor_level_results"
 )
