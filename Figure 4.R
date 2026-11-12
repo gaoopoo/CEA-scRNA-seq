@@ -1,3 +1,10 @@
+# Project root: the folder containing SMC/, macro/, Fig3/, Fig5_CellChat/, etc.
+# Every path in this script is built from this one setting, so the code no longer
+# depends on a single hard-coded drive letter. Either start R/RStudio in the
+# project root, or edit the one line below to point at it directly.
+# Stored as an R option so it survives the rm(list = ls()) calls between sections.
+options(cea.project_root = normalizePath(".", mustWork = FALSE))
+
 #Figure 4. Rare proliferating reparative fibroblasts (PRFs) represent a potential source of reparative fibroblast states
 
 rm(list = ls())
@@ -16,31 +23,31 @@ suppressMessages({
   library(scales)
 })
 library(ggrastr)
-setwd("G:/13sample/")
-out_dir <- "G:/13sample/Fig3_v3/"
+setwd(paste0(getOption("cea.project_root"), "/"))
+out_dir <- paste0(getOption("cea.project_root"), "/Fig3_v3/")
 
-# ¼ÓÔØ¶ÔÏó£¨ÒÑº¬ pseudotime + Healing1£©
+# åŠ è½½å¯¹è±¡ï¼ˆå·²å« pseudotime + Healing1ï¼‰
 fib_prf <- readRDS(paste0(out_dir, "fib_prf_v3_pseudotime.rds"))
 cds     <- readRDS(paste0(out_dir, "fib_prf_v3_cds.rds"))
 
-# ©¤©¤ Í³Ò»ÅäÉ« ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ ç»Ÿä¸€é…è‰² â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 celltype_colors_v3 <- c(
-  "Fibroblasts1" = "#D4A89AFF",   # ¡ï ¸Ä£ºÇ³·Û×Ø£¨ÈÃ³öÊÓ¾õ½¹µã¸ø PRFs£©
-  "Fibroblasts2" = "#E2ED50FF",   # »Æ
-  "PRFs"         = "#524559FF"    # Éîºì ¡ï Ö÷½ÇÉ«
+  "Fibroblasts1" = "#D4A89AFF",   # â˜… æ”¹ï¼šæµ…ç²‰æ£•ï¼ˆè®©å‡ºè§†è§‰ç„¦ç‚¹ç»™ PRFsï¼‰
+  "Fibroblasts2" = "#E2ED50FF",   # é»„
+  "PRFs"         = "#524559FF"    # æ·±çº¢ â˜… ä¸»è§’è‰²
 )
 
-# Èı×éÅäÉ«£¨±£Áô¹©ÆäËû panel ÓÃ£©
+# ä¸‰ç»„é…è‰²ï¼ˆä¿ç•™ä¾›å…¶ä»– panel ç”¨ï¼‰
 group_colors_full <- c(
-  "Normal" = "#8BEAFFFF",   # ÂÌ (Óë Fig1/2 Ò»ÖÂ)
-  "ASYM"   = "#FFE705FF",   # »Æ
-  "SYM"    = "#C71000FF"    # ºì
+  "Normal" = "#8BEAFFFF",   # ç»¿ (ä¸ Fig1/2 ä¸€è‡´)
+  "ASYM"   = "#FFE705FF",   # é»„
+  "SYM"    = "#C71000FF"    # çº¢
 )
-# ½ö ASYM/SYM£¨ÓÃÓÚ Panel E Ç÷ÊÆÍ¼£©
+# ä»… ASYM/SYMï¼ˆç”¨äº Panel E è¶‹åŠ¿å›¾ï¼‰
 group_colors_2 <- c("ASYM" = "#FFE705FF",
                     "SYM"  = "#C71000FF")
 
-# Í¨ÓÃÖ÷Ìâ
+# é€šç”¨ä¸»é¢˜
 theme_fig3 <- theme_classic(base_size = 11) +
   theme(
     plot.title    = element_text(face = "bold", size = 12),
@@ -51,18 +58,18 @@ theme_fig3 <- theme_classic(base_size = 11) +
   )
 
 --------------------------------------------------------------------------------
-##-----------Fig A ¡ª tSNE£ºPRFs ¸ßÁÁÎªºìÉ«ÁÁµã
+##-----------Fig A â€” tSNEï¼šPRFs é«˜äº®ä¸ºçº¢è‰²äº®ç‚¹
 tsne_df <- as.data.frame(Embeddings(fib_prf, "tsne"))
 tsne_df$celltype <- fib_prf$celltype_v3
 
 p_3A <- ggplot(tsne_df, aes(x = tSNE_1, y = tSNE_2)) +
-  # 1) Fibroblasts1/2 µ×É« ¡ª¡ª Õ¤¸ñ»¯
+  # 1) Fibroblasts1/2 åº•è‰² â€”â€” æ …æ ¼åŒ–
   rasterise(
     geom_point(data = subset(tsne_df, celltype != "PRFs"),
                aes(color = celltype),
                size = 0.4, alpha = 0.35),
     dpi = 600) +
-  # 2) PRFs ¸ßÁÁµã ¡ª¡ª Ò²Õ¤¸ñ»¯(µãÊıÉÙ, µ«Í³Ò»Õ¤¸ñ±ÜÃâ»ìºÏäÖÈ¾)
+  # 2) PRFs é«˜äº®ç‚¹ â€”â€” ä¹Ÿæ …æ ¼åŒ–(ç‚¹æ•°å°‘, ä½†ç»Ÿä¸€æ …æ ¼é¿å…æ··åˆæ¸²æŸ“)
   rasterise(
     geom_point(data = subset(tsne_df, celltype == "PRFs"),
                aes(fill = celltype),
@@ -89,13 +96,13 @@ ggsave(paste0(out_dir, "Fig3A_v2.png"), p_3A,
 
 
 --------------------------------------------------------------------------------
-##---------Fig B ¡ª Reparative markers£º6 ¸ö×îÅĞ±ğ marker + y ÖáÖØÅÅ
+##---------Fig B â€” Reparative markersï¼š6 ä¸ªæœ€åˆ¤åˆ« marker + y è½´é‡æ’
 
-# ¡ï ¾«¼ò marker£¨12 ¡ú 6 ¸ö£©
+# â˜… ç²¾ç®€ markerï¼ˆ12 â†’ 6 ä¸ªï¼‰
 reparative_markers <- c("POSTN", "TNC", "COL1A1", "COL3A1", "SPARC", "ACTA2")
 reparative_markers <- intersect(reparative_markers, rownames(fib_prf))
 
-# ¡ï y ÖáË³Ğò£ºPRFs ÔÚ×îÉÏ£¨ÊÓ¾õÖØµã = ×îÇ¿±í´ï£©
+# â˜… y è½´é¡ºåºï¼šPRFs åœ¨æœ€ä¸Šï¼ˆè§†è§‰é‡ç‚¹ = æœ€å¼ºè¡¨è¾¾ï¼‰
 fib_prf$celltype_v3 <- factor(fib_prf$celltype_v3,
                               levels = c("Fibroblasts1",
                                          "Fibroblasts2",
@@ -113,7 +120,7 @@ p_3B <- DotPlot(fib_prf,
     limits  = c(0, 2.5), oob = scales::squish,
     name    = "Avg. expression") +
   scale_size_continuous(range = c(0.5, 10), name = "% expressed") +
-  labs(title = "B. Reparative markers ¡ª PRFs express highest levels",
+  labs(title = "B. Reparative markers â€” PRFs express highest levels",
        subtitle = "Core reparative + myofibroblast markers",
        x = NULL, y = NULL) +
   theme_fig3 +
@@ -134,7 +141,7 @@ ggsave(paste0(out_dir, "Fig3B_v2.png"), p_3B,
        width = 7.5, height = 4, dpi = 600)
 
 
-##---------Fig B ¡ª Proliferation markers£ºÉ¾³ı vln£¬Ö»Áôµ¥ĞĞ dot plot
+##---------Fig B â€” Proliferation markersï¼šåˆ é™¤ vlnï¼Œåªç•™å•è¡Œ dot plot
 proliferation_markers <- c("MKI67", "TOP2A", "UBE2C", "BIRC5",
                            "PCNA", "CDK1", "CCNB1", "STMN1")
 proliferation_markers <- intersect(proliferation_markers, rownames(fib_prf))
@@ -146,11 +153,11 @@ p_3C <- DotPlot(fib_prf,
                 col.max   = 2.5) +
   scale_color_gradientn(
     colours = c("#FFFFFF", "#D6E4F2", "#9DC3E6",
-                "#3A6FA0", "#0A3D6B"),     # ¡ï À¶É«Ïµ£¬Óë B Çø·Ö
+                "#3A6FA0", "#0A3D6B"),     # â˜… è“è‰²ç³»ï¼Œä¸ B åŒºåˆ†
     limits  = c(0, 2.5), oob = scales::squish,
     name    = "Avg. expression") +
   scale_size_continuous(range = c(0.5, 10), name = "% expressed") +
-  labs(title = "C. Proliferation markers ¡ª PRFs uniquely cycle",
+  labs(title = "C. Proliferation markers â€” PRFs uniquely cycle",
        subtitle = "MKI67 mean = 0.689 in PRFs vs. < 0.01 in Fib1/2",
        x = NULL, y = NULL) +
   theme_fig3 +
@@ -176,7 +183,7 @@ celltype_colors_v3 <- c("Fibroblasts1"="#D4A89AFF",
                         "Fibroblasts2"="#E2ED50FF",
                         "PRFs"="#524559FF")
 
-## ©¤©¤ Á½¸ö module score: ÓëÕıÎÄ marker ÍêÈ«Ò»ÖÂ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+## â”€â”€ ä¸¤ä¸ª module score: ä¸æ­£æ–‡ marker å®Œå…¨ä¸€è‡´ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 reparative_genes    <- c("POSTN","TNC","COL1A1","COL3A1","SPARC")
 proliferation_genes <- c("MKI67","TOP2A","UBE2C","BIRC5")
 
@@ -192,18 +199,18 @@ df <- data.frame(
   celltype      = factor(fib_prf$celltype_v3,
                          levels = c("Fibroblasts1","Fibroblasts2","PRFs"))
 )
-## PRFs ºó»­, È·±£µşÔÚ×îÉÏ²ã²»±»ÕÚ
+## PRFs åç”», ç¡®ä¿å åœ¨æœ€ä¸Šå±‚ä¸è¢«é®
 df <- df[order(df$celltype == "PRFs"), ]
 
-## ÏóÏŞ·Ö¸ôÏß: ÓÃ¸÷ score µÄÖĞÎ»/0 ×÷²Î¿¼ (ÕâÀïÓÃ 0, Òò ModuleScore ÒÔ 0 ÎªÖĞĞÄ)
+## è±¡é™åˆ†éš”çº¿: ç”¨å„ score çš„ä¸­ä½/0 ä½œå‚è€ƒ (è¿™é‡Œç”¨ 0, å›  ModuleScore ä»¥ 0 ä¸ºä¸­å¿ƒ)
 xint <- 0; yint <- 0
 
 p_3B <- ggplot(df, aes(Reparative, Proliferation)) +
-  ## É¢µãÕ¤¸ñ»¯ (Á½Íò¶àÏ¸°û, ±ØĞëÕ¤¸ñ»¯)
+  ## æ•£ç‚¹æ …æ ¼åŒ– (ä¸¤ä¸‡å¤šç»†èƒ, å¿…é¡»æ …æ ¼åŒ–)
   rasterise(
     geom_point(aes(color = celltype), size = 0.5, alpha = 0.55),
     dpi = 600) +
-  ## PRFs ÔÙÃèÒ»²ã´óµãÍ»³öÖ÷½Ç
+  ## PRFs å†æä¸€å±‚å¤§ç‚¹çªå‡ºä¸»è§’
   rasterise(
     geom_point(data = subset(df, celltype == "PRFs"),
                aes(fill = celltype), shape = 21, size = 1.8,
@@ -229,7 +236,7 @@ ggsave(paste0(out_dir, "Fig3B_dualscore.pdf"), p_3B, width = 6, height = 5, devi
 ggsave(paste0(out_dir, "Fig3B_dualscore.png"), p_3B, width = 6, height = 5, dpi = 600)
 print(p_3B)
 
-## ©¤©¤ Ë³ÊÖÑéÖ¤: ¸øÕıÎÄÓÃµÄ proliferation score ·ÖÑÇÈº¾ùÖµ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+## â”€â”€ é¡ºæ‰‹éªŒè¯: ç»™æ­£æ–‡ç”¨çš„ proliferation score åˆ†äºšç¾¤å‡å€¼ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 df %>% group_by(celltype) %>%
   summarise(rep_med  = round(median(Reparative), 3),
             prol_med = round(median(Proliferation), 3),
@@ -238,7 +245,7 @@ df %>% group_by(celltype) %>%
 
 ------------------------------------------------------------------------------
   
-##--------Fig D ¡ª Pseudotime£ºÉ¾ celltype ×ÓÍ¼£¬ÏäÏßÍ¼°´ PRFs¡úFib2¡úFib1 ÅÅ
+##--------Fig D â€” Pseudotimeï¼šåˆ  celltype å­å›¾ï¼Œç®±çº¿å›¾æŒ‰ PRFsâ†’Fib2â†’Fib1 æ’
   
   # Fig. 3D replacement: donor-level pseudotime analysis
   #
@@ -274,7 +281,7 @@ df %>% group_by(celltype) %>%
 # 1. Paths and analysis settings
 # -----------------------------------------------------------------------------
 
-input_rds <- "G:/13sample/Fig3/Fig3_v3/fib_prf_v3_pseudotime.rds"
+input_rds <- paste0(getOption("cea.project_root"), "/Fig3/Fig3_v3/fib_prf_v3_pseudotime.rds")
 output_dir <- file.path(getwd(), "Fig3D_donor_level_results")
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
@@ -740,10 +747,10 @@ suppressPackageStartupMessages({
 # 1. Paths and prespecified settings
 # ==============================================================================
 
-input_rds <- "G:/13sample/Fig3/Fig3_v3/fib_prf_v3_pseudotime.rds"
+input_rds <- paste0(getOption("cea.project_root"), "/Fig3/Fig3_v3/fib_prf_v3_pseudotime.rds")
 
 out_dir <- file.path(
-  "G:/13sample/A ¾±¶¯Âöµ¥Ï¸°ûÎÄÕÂ/TREM2??? macrophage¨Creparative fibroblast healing axis",
+  paste0(getOption("cea.project_root"), "/A é¢ˆåŠ¨è„‰å•ç»†èƒæ–‡ç« /TREM2??? macrophageâ€“reparative fibroblast healing axis"),
   "Communications_Biology_submission/Communications_Biology_submission",
   "Fig3E_donor_pseudobulk_results"
 )
@@ -1336,8 +1343,8 @@ print(e2_tests)
 
 
 ------------------------------------------------------------------------
-##-----------FigF ¡ª µ¥ panel + per 1,000 cells µ¥Î»
-# Panel F final ¡ª Bar plot, ASYM vs SYM 
+##-----------FigF â€” å• panel + per 1,000 cells å•ä½
+# Panel F final â€” Bar plot, ASYM vs SYM 
 suppressMessages({
   library(Seurat)
   library(dplyr)
@@ -1347,10 +1354,10 @@ suppressMessages({
   library(patchwork)
 })
 
-# ©¤©¤ ÅäÉ«£¨Óë D/E Ò»ÖÂ£©©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ é…è‰²ï¼ˆä¸ D/E ä¸€è‡´ï¼‰â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 group_colors_2 <- c(
-  "ASYM" = "#F9C80EFF",   # »Æ
-  "SYM"  = "#C71000FF"    # ºì
+  "ASYM" = "#F9C80EFF",   # é»„
+  "SYM"  = "#C71000FF"    # çº¢
 )
 
 theme_fig3 <- theme_classic(base_size = 11) +
@@ -1362,7 +1369,7 @@ theme_fig3 <- theme_classic(base_size = 11) +
     axis.ticks    = element_line(linewidth = 0.4)
   )
 
-# ©¤©¤ Êı¾İ×¼±¸ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ æ•°æ®å‡†å¤‡ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 sample_col <- if ("orig.ident" %in% colnames(fib_prf@meta.data)) "orig.ident" else "sample"
 
 prop_long <- fib_prf@meta.data %>%
@@ -1373,7 +1380,7 @@ prop_long <- fib_prf@meta.data %>%
   ungroup()
 colnames(prop_long)[1] <- "sample"
 
-# ¡ï É¾³ı Normal£¬Ö»±£Áô ASYM/SYM
+# â˜… åˆ é™¤ Normalï¼Œåªä¿ç•™ ASYM/SYM
 prop_long <- prop_long %>%
   filter(group %in% c("ASYM", "SYM")) %>%
   mutate(group       = factor(group, levels = c("ASYM", "SYM")),
@@ -1382,7 +1389,7 @@ prop_long <- prop_long %>%
                                          "Fibroblasts2",
                                          "PRFs")))
 
-# ¾ùÖµ + SE£¨Ã¿¸ö celltype ¡Á group£©
+# å‡å€¼ + SEï¼ˆæ¯ä¸ª celltype Ã— groupï¼‰
 summary_df <- prop_long %>%
   group_by(celltype_v3, group) %>%
   summarise(
@@ -1393,7 +1400,7 @@ summary_df <- prop_long %>%
   )
 print(summary_df)
 
-# P Öµ£¨Ã¿¸öÑÇÈº ASYM vs SYM£©
+# P å€¼ï¼ˆæ¯ä¸ªäºšç¾¤ ASYM vs SYMï¼‰
 p_vals_F <- prop_long %>%
   group_by(celltype_v3) %>%
   summarise(
@@ -1411,28 +1418,28 @@ p_vals_F <- prop_long %>%
   ))
 print(p_vals_F)
 
-# ©¤©¤ »æÍ¼£ºÖù×´Í¼ + Îó²î°ô + ¸öÌåµã + P Öµ bracket ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ ç»˜å›¾ï¼šæŸ±çŠ¶å›¾ + è¯¯å·®æ£’ + ä¸ªä½“ç‚¹ + P å€¼ bracket â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 p_3F <- ggplot() +
-  # 1) Öù£º×é¾ùÖµ£¨ÓëµÚ¶şÕÅÍ¼Í¬¿î£©
+  # 1) æŸ±ï¼šç»„å‡å€¼ï¼ˆä¸ç¬¬äºŒå¼ å›¾åŒæ¬¾ï¼‰
   geom_col(data = summary_df,
            aes(x = group, y = mean_val, fill = group),
            width = 0.65, color = "black", linewidth = 0.4,
            alpha = 0.9) +
-  # 2) Îó²î°ô£¨mean ¡À SE£©
+  # 2) è¯¯å·®æ£’ï¼ˆmean Â± SEï¼‰
   geom_errorbar(data = summary_df,
                 aes(x = group,
                     ymin = pmax(0, mean_val - se_val),
                     ymax = mean_val + se_val),
                 width = 0.18, linewidth = 0.5,
                 color = "black") +
-  # 3) ¸öÌåÉ¢µã£¨Ã¿¸öÑù±¾Ò»¸öµã£©
+  # 3) ä¸ªä½“æ•£ç‚¹ï¼ˆæ¯ä¸ªæ ·æœ¬ä¸€ä¸ªç‚¹ï¼‰
   geom_jitter(data = prop_long,
               aes(x = group, y = per_1000),
               width = 0.12, height = 0,
               size = 2.2, shape = 21,
               fill = "white", color = "grey20",
               stroke = 0.5, alpha = 0.95) +
-  # 4) P Öµ bracket£¨ASYM vs SYM£©
+  # 4) P å€¼ bracketï¼ˆASYM vs SYMï¼‰
   geom_signif(
     data = prop_long,
     aes(x = group, y = per_1000),
@@ -1474,7 +1481,7 @@ cat("\n??? Fig 3F final version saved\n")
 
 --------------------------------------------------------------------------------
   
-##------------Fig G PRFs absolute count ¡ª Bar plot, ASYM vs SYM 
+##------------Fig G PRFs absolute count â€” Bar plot, ASYM vs SYM 
 
 suppressMessages({
   library(Seurat)
@@ -1484,10 +1491,10 @@ suppressMessages({
   library(ggsignif)
 })
 
-# ©¤©¤ ÅäÉ«£¨Óë Panel F Ò»ÖÂ£©©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ é…è‰²ï¼ˆä¸ Panel F ä¸€è‡´ï¼‰â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 group_colors_2 <- c(
-  "ASYM" = "#F9C80EFF",   # »Æ
-  "SYM"  = "#C71000FF"    # ºì
+  "ASYM" = "#F9C80EFF",   # é»„
+  "SYM"  = "#C71000FF"    # çº¢
 )
 
 theme_fig3 <- theme_classic(base_size = 11) +
@@ -1499,17 +1506,17 @@ theme_fig3 <- theme_classic(base_size = 11) +
     axis.ticks    = element_line(linewidth = 0.4)
   )
 
-# ©¤©¤ Êı¾İ×¼±¸ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ æ•°æ®å‡†å¤‡ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 sample_col <- if ("orig.ident" %in% colnames(fib_prf@meta.data)) "orig.ident" else "sample"
 
-# Ã¿¸öÑù±¾µÄ PRFs ¾ø¶ÔÊı
+# æ¯ä¸ªæ ·æœ¬çš„ PRFs ç»å¯¹æ•°
 abs_count <- fib_prf@meta.data %>%
   filter(celltype_v3 == "PRFs") %>%
   group_by(!!sym(sample_col), group) %>%
   summarise(n_PRFs = n(), .groups = "drop")
 colnames(abs_count)[1] <- "sample"
 
-# ¼ÓÈëÃ»ÓĞ PRFs µÄÑù±¾£¨n_PRFs = 0£©
+# åŠ å…¥æ²¡æœ‰ PRFs çš„æ ·æœ¬ï¼ˆn_PRFs = 0ï¼‰
 all_samples <- fib_prf@meta.data %>%
   distinct(!!sym(sample_col), group)
 colnames(all_samples)[1] <- "sample"
@@ -1518,14 +1525,14 @@ abs_count <- all_samples %>%
   left_join(abs_count, by = c("sample", "group")) %>%
   mutate(n_PRFs = ifelse(is.na(n_PRFs), 0, n_PRFs))
 
-# ¡ï É¾³ı Normal£¬Ö»±£Áô ASYM/SYM
+# â˜… åˆ é™¤ Normalï¼Œåªä¿ç•™ ASYM/SYM
 abs_count <- abs_count %>%
   filter(group %in% c("ASYM", "SYM")) %>%
   mutate(group = factor(group, levels = c("ASYM", "SYM")))
 
 print(abs_count)
 
-# ¾ùÖµ + SE
+# å‡å€¼ + SE
 abs_summary <- abs_count %>%
   group_by(group) %>%
   summarise(
@@ -1536,35 +1543,35 @@ abs_summary <- abs_count %>%
   )
 print(abs_summary)
 
-# P Öµ
+# P å€¼
 p_abs <- tryCatch(
   wilcox.test(n_PRFs ~ group, data = abs_count)$p.value,
   error = function(e) NA
 )
-cat(sprintf("PRFs absolute count ¡ª Wilcoxon P = %.3f\n", p_abs))
+cat(sprintf("PRFs absolute count â€” Wilcoxon P = %.3f\n", p_abs))
 
-# ©¤©¤ »æÍ¼£ºÖù×´Í¼ + Îó²î°ô + ¸öÌåµã + P Öµ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ ç»˜å›¾ï¼šæŸ±çŠ¶å›¾ + è¯¯å·®æ£’ + ä¸ªä½“ç‚¹ + P å€¼ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 p_abs_bar <- ggplot() +
-  # 1) Öù£º×é¾ùÖµ
+  # 1) æŸ±ï¼šç»„å‡å€¼
   geom_col(data = abs_summary,
            aes(x = group, y = mean_val, fill = group),
            width = 0.55, color = "black", linewidth = 0.4,
            alpha = 0.9) +
-  # 2) Îó²î°ô£¨mean ¡À SE£©
+  # 2) è¯¯å·®æ£’ï¼ˆmean Â± SEï¼‰
   geom_errorbar(data = abs_summary,
                 aes(x = group,
                     ymin = pmax(0, mean_val - se_val),
                     ymax = mean_val + se_val),
                 width = 0.15, linewidth = 0.5,
                 color = "black") +
-  # 3) ¸öÌåÉ¢µã£¨Ã¿¸öÑù±¾Ò»¸öµã£©
+  # 3) ä¸ªä½“æ•£ç‚¹ï¼ˆæ¯ä¸ªæ ·æœ¬ä¸€ä¸ªç‚¹ï¼‰
   geom_jitter(data = abs_count,
               aes(x = group, y = n_PRFs),
               width = 0.10, height = 0,
               size = 2.5, shape = 21,
               fill = "white", color = "grey20",
               stroke = 0.5, alpha = 0.95) +
-  # 4) P Öµ bracket
+  # 4) P å€¼ bracket
   geom_signif(
     data = abs_count,
     aes(x = group, y = n_PRFs),

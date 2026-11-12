@@ -1,6 +1,13 @@
+# Project root: the folder containing SMC/, macro/, Fig3/, Fig5_CellChat/, etc.
+# Every path in this script is built from this one setting, so the code no longer
+# depends on a single hard-coded drive letter. Either start R/RStudio in the
+# project root, or edit the one line below to point at it directly.
+# Stored as an R option so it survives the rm(list = ls()) calls between sections.
+options(cea.project_root = normalizePath(".", mustWork = FALSE))
+
 # Supplemental Figure 4 
 # ==========================================================================================
-# ¹²ÓÃ×¼±¸´úÂë£ºÔ­Â·¾¶¶¨Î»Óë 00_common.R ÍêÕûÔ­ÎÄ
+# å…±ç”¨å‡†å¤‡ä»£ç ï¼šåŸè·¯å¾„å®šä½ä¸ 00_common.R å®Œæ•´åŸæ–‡
 # ==========================================================================================
 
 source_path <- tryCatch(normalizePath(sys.frame(1)$ofile,mustWork=TRUE),error=function(e) "")
@@ -13,9 +20,9 @@ FIG4_HOME <- dirname(source_path)
 options(stringsAsFactors = FALSE)
 if (dir.exists(file.path(FIG4_HOME,"R-library"))) .libPaths(c(file.path(FIG4_HOME,"R-library"),.libPaths()))
 cfg <- list(
-  input = "G:/13sample/macro/macro.rds",
-  existing_pb = "G:/13sample/macro/Fig4D/Fig4D_donor_pseudobulk_results",
-  old_trajectory = "G:/13sample/macro/Fig4E/macro_with_pseudotime_3grp.rds",
+  input = paste0(getOption("cea.project_root"), "/macro/macro.rds"),
+  existing_pb = paste0(getOption("cea.project_root"), "/macro/Fig4D/Fig4D_donor_pseudobulk_results"),
+  old_trajectory = paste0(getOption("cea.project_root"), "/macro/Fig4E/macro_with_pseudotime_3grp.rds"),
   populations = c("Monocytes", "Macrophages1", "Macrophages2"),
   groups = c("ASYM", "SYM"), min_cells = 20L, seed = 20260901L,
   bootstrap = 5000L, bins = 15L, bin_cells = 10L, bin_donors = 4L,
@@ -432,7 +439,7 @@ local({
   
   # ==========================================================================================
   # Figure C : Functional-marker dynamics along within-partition pseudotime
-  # ¶ÔÓ¦Ô­ heat_plot / ph£¬±£ÁôÔ­ marker Ë³Ğò¼°Ô­´úÂëÖĞµÄËùÓĞ¼ÆËãÓëÑùÊ½¡£
+  # å¯¹åº”åŸ heat_plot / phï¼Œä¿ç•™åŸ marker é¡ºåºåŠåŸä»£ç ä¸­çš„æ‰€æœ‰è®¡ç®—ä¸æ ·å¼ã€‚
   # ==========================================================================================
   
   heat <- table_in(tr,"donor_balanced_heatmap_source")
@@ -455,7 +462,7 @@ local({
   save_fig(ph,"Fig4S_marker_PT",out,6.5,6.5)
   
   # ==========================================================================================
-  # Figure D ´úÂë | Donor/patient coverage per pseudotime bin
+  # Figure D ä»£ç  | Donor/patient coverage per pseudotime bin
   pcovdata <- table_in(tr,"donor_bin_coverage_including_missing_bins") %>% filter(partition==major)
   pcov <- ggplot(pcovdata,aes((bin-.5)/cfg$bins,n_donors,fill=retained)) +
     geom_col(width=.9/cfg$bins) + geom_hline(yintercept=cfg$bin_donors,linetype=2) +
@@ -468,7 +475,7 @@ local({
 
 # ==========================================================================================
 # Figure E: 12-gene sensitivity LAM program
-#  Fig4S_legacy_LAM_gene_set_sensitivity¡£
+#  Fig4S_legacy_LAM_gene_set_sensitivityã€‚
 
 local({
   source_path <- tryCatch(normalizePath(sys.frame(1)$ofile,mustWork=TRUE),error=function(e) "")
@@ -521,7 +528,7 @@ local({
 
 # ==========================================================================================
 # Figure F :Gene-level membership across Our and three published LAM signatures
-#  Supp Figure S5 ½Å±¾µÄ p_B£¨Gene membership heatmap£©¡£
+#  Supp Figure S5 è„šæœ¬çš„ p_Bï¼ˆGene membership heatmapï¼‰ã€‚
 
 suppressMessages({
   library(tidyverse)
@@ -530,10 +537,10 @@ suppressMessages({
   library(grid)
 })
 
-out_dir <- "G:/13sample/SuppFigS5/"
+out_dir <- paste0(getOption("cea.project_root"), "/SuppFigS5/")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
-# ©¤©¤ 1. ¶¨Òå 4 ¸ö LAM signature ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 1. å®šä¹‰ 4 ä¸ª LAM signature â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 sig_lists <- list(
   "Our (21 genes)" = c(
     "TREM2","CD9","SPP1","APOE","GPNMB","FABP5",
@@ -557,7 +564,7 @@ for (n in names(sig_lists)) {
   cat("  ", n, ":", length(sig_lists[[n]]), "genes\n")
 }
 
-# ¼ò»¯±êÇ© (¹© B/C ÓÃ)
+# ç®€åŒ–æ ‡ç­¾ (ä¾› B/C ç”¨)
 sig_short <- c(
   "Our (21 genes)"            = "Our",
   "Cochain 2018 (9 genes)"    = "Cochain 2018",
@@ -565,9 +572,9 @@ sig_short <- c(
   "Willemsen 2024 (10 genes)" = "Willemsen 2024"
 )
 
-# ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Gene membership heatmap
-# ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 all_genes <- unique(unlist(sig_lists))
 cat("\n=== Total unique genes across 4 signatures:", length(all_genes), "===\n")
 
@@ -617,7 +624,7 @@ p_B <- ggplot(heat_df, aes(x = Signature, y = Gene, fill = Present)) +
 
 # ==========================================================================================
 # Figure G : GO biological processes of SPP1+ foamy LAMs
-# Fig4G_GO_foamy¡£
+# Fig4G_GO_foamyã€‚
 
 suppressMessages({
   library(Seurat); library(tidyverse); library(ggplot2)
@@ -625,11 +632,11 @@ suppressMessages({
   library(clusterProfiler); library(org.Hs.eg.db)
 })
 
-macro <- readRDS("G:/13sample/macro/Fig4E/macro_with_pseudotime_3grp.rds")  # ¡ï ÒÑÌŞ³ı Macro3
-out_dir <- "G:/13sample/macro/Fig4G/"
+macro <- readRDS(paste0(getOption("cea.project_root"), "/macro/Fig4E/macro_with_pseudotime_3grp.rds"))  # â˜… å·²å‰”é™¤ Macro3
+out_dir <- paste0(getOption("cea.project_root"), "/macro/Fig4G/")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
-# ©¤©¤ 1. ½ö foamy LAM + mature LAM ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 1. ä»… foamy LAM + mature LAM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 macro$lam_compare <- dplyr::case_when(
   macro$celltype == "Macrophages1" ~ "Foamy_LAM",
   macro$celltype == "Macrophages2" ~ "Mature_LAM",
@@ -639,7 +646,7 @@ macro_lam <- subset(macro, subset = !is.na(lam_compare))
 Idents(macro_lam) <- macro_lam$lam_compare
 cat("LAM cells for comparison:\n"); print(table(Idents(macro_lam)))
 
-# ©¤©¤ 2. DEG: foamy vs mature ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 2. DEG: foamy vs mature â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 deg <- FindMarkers(macro_lam, ident.1 = "Foamy_LAM", ident.2 = "Mature_LAM",
                    logfc.threshold = 0, min.pct = 0.1, test.use = "wilcox") %>%
   rownames_to_column("gene") %>%
@@ -651,7 +658,7 @@ deg <- FindMarkers(macro_lam, ident.1 = "Foamy_LAM", ident.2 = "Mature_LAM",
 cat("DEG counts:\n"); print(table(deg$direction))
 write.csv(deg, paste0(out_dir, "DEG_foamy_vs_mature.csv"), row.names = FALSE)
 
-# GO ¸»¼¯
+# GO å¯Œé›†
 # ============================================================================
 run_go <- function(gene_list, ont = "BP", top_n = 8) {
   gene_entrez <- bitr(gene_list, fromType = "SYMBOL", toType = "ENTREZID",
@@ -674,19 +681,19 @@ cat("\nFoamy up:", length(foamy_genes), " Mature up:", length(mature_genes), "\n
 
 go_foamy  <- run_go(foamy_genes,  ont = "BP", top_n = 8)
 
-# Fig4G/Figure 4G ¡ª Foamy LAM vs Mature LAM DEG + GO.R 
+# Fig4G/Figure 4G â€” Foamy LAM vs Mature LAM DEG + GO.R 
 if (!is.null(go_foamy))  write.csv(go_foamy,  paste0(out_dir,"GO_foamy_BP.csv"),  row.names = FALSE)
 
 # FigG: Foamy LAM vs Mature LAM DEG + GO.R 
 # ============================================================================
-# G2 ¡ª ±³¿¿±³ÌõĞÎÍ¼ (diverging bar)
+# G2 â€” èƒŒé èƒŒæ¡å½¢å›¾ (diverging bar)
 # ============================================================================
 n_top <- 9
 
 make_bar <- function(go_df, fill_col, title) {
   d <- go_df %>% slice_min(p.adjust, n = n_top) %>%
     mutate(Description = str_replace_all(Description, "\n", " "),
-           Description = str_wrap(Description, width = 32),   # ¡ï ³¤ÃûÕÛĞĞ, ¿ØÖÆÃ¿ĞĞ×ÖÊı
+           Description = str_wrap(Description, width = 32),   # â˜… é•¿åæŠ˜è¡Œ, æ§åˆ¶æ¯è¡Œå­—æ•°
            nlog10 = -log10(p.adjust)) %>%
     arrange(nlog10) %>%
     mutate(Description = factor(Description, levels = Description))
@@ -697,7 +704,7 @@ make_bar <- function(go_df, fill_col, title) {
     labs(title = title, x = "-log10(pvalue)", y = NULL) +
     theme_classic(base_size = 11) +
     theme(plot.title  = element_text(size = 11, hjust = 0),
-          axis.text.y = element_text(color = "black", size = 8, lineheight = 0.85),  # ĞĞ¾à½ô´Õ
+          axis.text.y = element_text(color = "black", size = 8, lineheight = 0.85),  # è¡Œè·ç´§å‡‘
           axis.text.x = element_text(color = "black"),
           axis.line   = element_line(linewidth = 0.4),
           axis.ticks  = element_line(linewidth = 0.4),
@@ -712,18 +719,18 @@ ggsave(paste0(out_dir, "Fig4G_GO_foamy.png"),  p_left,  width = 7, height = 4, d
 
 # ==========================================================================================
 # Figure H : GO biological processes of TREM2+ mature LAMs
-#  Fig4G_GO_mature£»Ê¹ÓÃ G ÖĞÔ­ÓĞµÄ mature_genes¡¢run_go¡¢make_bar¡£
+#  Fig4G_GO_matureï¼›ä½¿ç”¨ G ä¸­åŸæœ‰çš„ mature_genesã€run_goã€make_barã€‚
 # ==========================================================================================
 
-# Fig4G/Figure 4G ¡ª Foamy LAM vs Mature LAM DEG + GO.R 
+# Fig4G/Figure 4G â€” Foamy LAM vs Mature LAM DEG + GO.R 
 go_mature <- run_go(mature_genes, ont = "BP", top_n = 8)
 
-#  Fig4G/Figure 4G ¡ª Foamy LAM vs Mature LAM DEG + GO.R 
+#  Fig4G/Figure 4G â€” Foamy LAM vs Mature LAM DEG + GO.R 
 if (!is.null(go_mature)) write.csv(go_mature, paste0(out_dir,"GO_mature_BP.csv"), row.names = FALSE)
-#  Fig4G/Figure 4G ¡ª Foamy LAM vs Mature LAM DEG + GO.R
+#  Fig4G/Figure 4G â€” Foamy LAM vs Mature LAM DEG + GO.R
 p_right <- make_bar(go_mature, "#8B0000", "TREM2+ mature LAM")
 
-# ¡ï mature Í¨Â·Ãû³¤, »­²¼¼Ó¿í (width 6¡ú8)
+# â˜… mature é€šè·¯åé•¿, ç”»å¸ƒåŠ å®½ (width 6â†’8)
 
 ggsave(paste0(out_dir, "Fig4G_GO_mature.pdf"), p_right, width = 8, height = 4, device = cairo_pdf)
 ggsave(paste0(out_dir, "Fig4G_GO_mature.png"), p_right, width = 8, height = 4, dpi = 600)

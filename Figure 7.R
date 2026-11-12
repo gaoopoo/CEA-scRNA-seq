@@ -1,16 +1,23 @@
+# Project root: the folder containing SMC/, macro/, Fig3/, Fig5_CellChat/, etc.
+# Every path in this script is built from this one setting, so the code no longer
+# depends on a single hard-coded drive letter. Either start R/RStudio in the
+# project root, or edit the one line below to point at it directly.
+# Stored as an R option so it survives the rm(list = ls()) calls between sections.
+options(cea.project_root = normalizePath(".", mustWork = FALSE))
+
 #--Figure 7. The TREM2??? lipid-associated macrophage (LAM) signature is recoverable across independent bulk transcriptomic cohorts
 
-# FigureA ¡ª Single-cell to clinical translation workflow
+# FigureA â€” Single-cell to clinical translation workflow
 
 suppressMessages({
   library(ggplot2)
   library(tidyverse)
 })
 
-out_dir <- "G:/13sample/Fig6/"
+out_dir <- paste0(getOption("cea.project_root"), "/Fig6/")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
-## ©¤©¤ Ö÷Ìâ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+## â”€â”€ ä¸»é¢˜ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 theme_schematic <- theme_void() +
   theme(plot.title    = element_text(face = "bold", size = 13,
                                      hjust = 0, margin = margin(b = 8)),
@@ -18,43 +25,43 @@ theme_schematic <- theme_void() +
                                      hjust = 0, margin = margin(b = 12)),
         plot.margin   = margin(15, 15, 15, 15))
 
-## ©¤©¤ ÅäÉ«£¨Óë Fig4-5 Ò»ÖÂ£©©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+## â”€â”€ é…è‰²ï¼ˆä¸ Fig4-5 ä¸€è‡´ï¼‰â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 cols <- list(
   sc_data    = "#5DC8B8",
   fibroblast = "#F0B5AD",
   trem2_lam  = "#8B0000",
   combined   = "#E59085",
   cohort1    = "#3A6FA0",   # GSE100927  presence
-  cohort2    = "#5C8AB8",   # GSE28829   severity£¨ĞÂÔö£©
+  cohort2    = "#5C8AB8",   # GSE28829   severityï¼ˆæ–°å¢ï¼‰
   cohort3    = "#7FA5C7",   # GSE43292   within-patient
   arrow      = "grey40"
 )
 
-## ©¤©¤ box ×ø±ê / ÎÄ±¾ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+## â”€â”€ box åæ ‡ / æ–‡æœ¬ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 box_df <- tibble::tribble(
   ~id,      ~x,    ~y,    ~w,    ~h,   ~fill,            ~label,
-  # Row1 Êı¾İÔ´
+  # Row1 æ•°æ®æº
   "sc",     5.5,   10,    4.6,   1.4,  cols$sc_data,     "Single-cell atlas\n(12 CEA: 6 ASYM + 6 SYM)",
-  # Row2 Èı¸ö signature
+  # Row2 ä¸‰ä¸ª signature
   "fib",    2.0,   7.3,   2.7,   1.5,  cols$fibroblast,  "Fibroblast\nhealing\n10 genes",
   "trem2",  5.5,   7.3,   2.7,   1.5,  cols$trem2_lam,   "TREM2+ LAM\n21 genes",
   "comb",   9.0,   7.3,   2.7,   1.5,  cols$combined,    "Combined\nhealing\n28 genes",
-  # Row3 Èı¸ö cohort£¨°´ÑÏ¸ñ¶È½×ÌİÅÅĞò£©
+  # Row3 ä¸‰ä¸ª cohortï¼ˆæŒ‰ä¸¥æ ¼åº¦é˜¶æ¢¯æ’åºï¼‰
   "gse1",   2.0,   4.4,   3.0,   1.7,  cols$cohort1,     "GSE100927\n29 plaque vs 12 control\n(presence)",
   "gse2",   5.5,   4.4,   3.0,   1.7,  cols$cohort2,     "GSE28829\n16 advanced vs 13 early\n(severity)",
   "gse3",   9.0,   4.4,   3.0,   1.7,  cols$cohort3,     "GSE43292\n32 paired atheroma/intact\n(within-patient)",
-  # Row4 Êä³ö
+  # Row4 è¾“å‡º
   "output", 5.5,   1.6,   5.6,   1.4,  "grey25",         "ssGSEA + bootstrap ROC\nAUC validation"
 )
 
-## ©¤©¤ ¼ıÍ· ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+## â”€â”€ ç®­å¤´ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 arrow_df <- tibble::tribble(
   ~x,    ~y,    ~xend,  ~yend,
   # sc -> 3 signatures
   5.5,   9.3,   2.0,    8.05,
   5.5,   9.3,   5.5,    8.05,
   5.5,   9.3,   9.0,    8.05,
-  # signatures(ÖĞĞÄ) -> 3 cohorts
+  # signatures(ä¸­å¿ƒ) -> 3 cohorts
   5.5,   6.55,  2.0,    5.25,
   5.5,   6.55,  5.5,    5.25,
   5.5,   6.55,  9.0,    5.25,
@@ -64,7 +71,7 @@ arrow_df <- tibble::tribble(
   9.0,   3.55,  5.5,    2.3
 )
 
-## ©¤©¤ »æÍ¼ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+## â”€â”€ ç»˜å›¾ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 p_6A <- ggplot() +
   geom_segment(data = arrow_df,
                aes(x = x, y = y, xend = xend, yend = yend),
@@ -91,32 +98,32 @@ p_6A <- ggplot() +
        subtitle = "Three healing signatures evaluated across three cohorts of increasing stringency") +
   theme_schematic
 
-## ©¤©¤ ±£´æ£¨Ä¬ÈÏ pdf Éè±¸£©©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+## â”€â”€ ä¿å­˜ï¼ˆé»˜è®¤ pdf è®¾å¤‡ï¼‰â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 ggsave(paste0(out_dir, "Fig6A.pdf"), p_6A, width = 7.5, height = 6)
 ggsave(paste0(out_dir, "Fig6A.png"), p_6A, width = 7.5, height = 6, dpi = 600)
 cat("\nFig 6A (V3) saved\n")
 
 --------------------------------------------------------------------------------
-# FigureB ¡ª ssGSEA scores ×ÛºÏÍ¼ (3 sig ¡Á 2 cohort)
+# FigureB â€” ssGSEA scores ç»¼åˆå›¾ (3 sig Ã— 2 cohort)
 ################################################################################
 
 suppressMessages({
   library(tidyverse)
   library(ggplot2)
-  library(ggh4x)        # ÓÃÓÚ facet header ¸öĞÔ»¯ÅäÉ«
+  library(ggh4x)        # ç”¨äº facet header ä¸ªæ€§åŒ–é…è‰²
   library(patchwork)
 })
 
 
-out_dir <- "G:/13sample/Fig6/"
+out_dir <- paste0(getOption("cea.project_root"), "/Fig6/")
 
-# ©¤©¤ 1. ¶ÁÈ¡ÒÑÓĞ ssGSEA Êı¾İ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 1. è¯»å–å·²æœ‰ ssGSEA æ•°æ® â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 score_100927 <- read.csv(paste0(out_dir, "Fig6_GSE100927_scores.csv"),
                          stringsAsFactors = FALSE)
 score_43292  <- read.csv(paste0(out_dir, "Fig6_GSE43292_scores.csv"),
                          stringsAsFactors = FALSE)
 
-# ©¤©¤ 2. ÕûºÏ³¤¸ñÊ½ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 2. æ•´åˆé•¿æ ¼å¼ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 prepare_long <- function(df, cohort_name) {
   df %>%
     pivot_longer(cols = c("Fibroblast_Healing", "TREM2_LAM", "Combined_Healing"),
@@ -130,7 +137,7 @@ score_long <- bind_rows(
   prepare_long(score_43292,  "GSE43292")
 )
 
-# Í³Ò» group ±êÇ©£¨control/intact = "Healthy"; plaque/atheroma = "Disease"£©
+# ç»Ÿä¸€ group æ ‡ç­¾ï¼ˆcontrol/intact = "Healthy"; plaque/atheroma = "Disease"ï¼‰
 score_long <- score_long %>%
   mutate(group_unified = case_when(
     group %in% c("control", "intact") ~ "Healthy",
@@ -138,7 +145,7 @@ score_long <- score_long %>%
     TRUE ~ as.character(group)
   ))
 
-# Éè factor Ë³Ğò
+# è®¾ factor é¡ºåº
 score_long$Signature <- factor(score_long$Signature,
                                levels = c("Fibroblast_Healing",
                                           "TREM2_LAM",
@@ -148,7 +155,7 @@ score_long$Cohort <- factor(score_long$Cohort,
 score_long$group_unified <- factor(score_long$group_unified,
                                    levels = c("Healthy", "Disease"))
 
-# ÖØÃüÃû facet header£¨¸ü¿É¶Á£©
+# é‡å‘½å facet headerï¼ˆæ›´å¯è¯»ï¼‰
 levels(score_long$Signature) <- c(
   "Fibroblast healing (10 genes)",
   "TREM2??? LAM (21 genes)",
@@ -159,7 +166,7 @@ levels(score_long$Cohort) <- c(
   "GSE43292 (atheroma vs intact)"
 )
 
-# ©¤©¤ 3. ¼ÆËãÃ¿¸ö facet µÄ Wilcoxon P Öµ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 3. è®¡ç®—æ¯ä¸ª facet çš„ Wilcoxon P å€¼ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 p_values <- score_long %>%
   group_by(Signature, Cohort) %>%
   summarise(
@@ -178,15 +185,15 @@ p_values <- score_long %>%
 
 print(p_values)
 
-# ©¤©¤ 4. ÅäÉ« ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 4. é…è‰² â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 group_col <- c("Healthy" = "#F9C80EFF", "Disease" = "#C71000FF")
 
-# Facet header ÅäÉ«£¨Ç¿µ÷ TREM2??? LAM ĞĞ£©
+# Facet header é…è‰²ï¼ˆå¼ºè°ƒ TREM2??? LAM è¡Œï¼‰
 strip_colors <- strip_themed(
   background_y = elem_list_rect(fill = c(
-    "#F0B5AD",                  # Fibroblast: Ç³ºì
-    "#8B0000",                  # TREM2??? LAM: Éîºì£¨Ç¿µ÷£©
-    "#E59085"                   # Combined: ÖĞºì
+    "#F0B5AD",                  # Fibroblast: æµ…çº¢
+    "#8B0000",                  # TREM2??? LAM: æ·±çº¢ï¼ˆå¼ºè°ƒï¼‰
+    "#E59085"                   # Combined: ä¸­çº¢
   )),
   text_y = elem_list_text(
     color = c("grey15", "white", "grey15"),
@@ -197,17 +204,17 @@ strip_colors <- strip_themed(
   text_x = elem_list_text(face = "bold", size = 11, color = "grey15")
 )
 
-# ©¤©¤ 5. »æÍ¼ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 5. ç»˜å›¾ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 p_6B <- ggplot(score_long,
                aes(x = group_unified, y = Score, fill = group_unified)) +
-  # 1) Ğ¡ÌáÇÙ
+  # 1) å°æç´
   geom_violin(scale = "width", trim = TRUE,
               color = "black", linewidth = 0.3,
               alpha = 0.85) +
-  # 2) Ç¶Ì×ÏäÌå
+  # 2) åµŒå¥—ç®±ä½“
   geom_boxplot(width = 0.15, fill = "white",
                outlier.size = 0.3, linewidth = 0.3) +
-  # 3) P Öµ±ê×¢
+  # 3) P å€¼æ ‡æ³¨
   geom_text(data = p_values,
             aes(x = 1.5, y = y_pos, label = p_label),
             inherit.aes = FALSE,
@@ -215,13 +222,13 @@ p_6B <- ggplot(score_long,
             color = "grey15") +
   scale_fill_manual(values = group_col, name = NULL) +
   scale_y_continuous(expand = expansion(mult = c(0.05, 0.12))) +
-  # 4) Facet (ÓÃ ggh4x µÄ facet_grid2 ÊµÏÖ¸öĞÔ»¯ header)
+  # 4) Facet (ç”¨ ggh4x çš„ facet_grid2 å®ç°ä¸ªæ€§åŒ– header)
   facet_grid2(Signature ~ Cohort,
               scales = "free_y",
               strip = strip_colors) +
-  # 5) ±êÌâ
+  # 5) æ ‡é¢˜
   labs(title = "B. ssGSEA scores across signatures and cohorts",
-       subtitle = "Three signatures (rows) ¡Á Two independent cohorts (columns)",
+       subtitle = "Three signatures (rows) Ã— Two independent cohorts (columns)",
        x = NULL,
        y = "ssGSEA score") +
   theme_bw(base_size = 11) +
@@ -239,7 +246,7 @@ p_6B <- ggplot(score_long,
     panel.spacing    = unit(0.4, "cm")
   )
 
-# ©¤©¤ 6. ±£´æ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 6. ä¿å­˜ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 ggsave(paste0(out_dir, "Fig6B.pdf"), p_6B,
        width = 8.5, height = 8, device = cairo_pdf)
 ggsave(paste0(out_dir, "Fig6B.png"), p_6B,
@@ -258,7 +265,7 @@ if (length(missing)) {
 }
 suppressPackageStartupMessages(library(ggplot2))
 
-input_dir <- getOption("roc_fix.input_dir", "G:/13sample/Fig6")
+input_dir <- getOption("roc_fix.input_dir", paste0(getOption("cea.project_root"), "/Fig6"))
 out_dir <- getOption("roc_fix.output_dir", file.path(input_dir, "ROC_fixed"))
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 set.seed(2026)
@@ -470,14 +477,14 @@ if (interactive()) print(p_CDE)
 message("Saved corrected figures and audit tables to: ", normalizePath(out_dir, winslash = "/"))
 
 --------------------------------------------------------------------------------
-  # Figure F ¡ª µ¥Í¼°æ (½öÅä¶ÔÁ¬ÏßÍ¼) 
+  # Figure F â€” å•å›¾ç‰ˆ (ä»…é…å¯¹è¿çº¿å›¾) 
 suppressMessages({
   library(tidyverse); library(ggplot2)
 })
 
-out_dir <- "G:/13sample/Fig6/"
+out_dir <- paste0(getOption("cea.project_root"), "/Fig6/")
 
-# ©¤©¤ Êı¾İ×¼±¸ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ æ•°æ®å‡†å¤‡ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 score_43292 <- read.csv(paste0(out_dir, "Fig6_GSE43292_scores.csv"), stringsAsFactors = FALSE)
 paired_info <- read.csv(paste0(out_dir, "GSE43292_paired_info.csv"), stringsAsFactors = FALSE)
 
@@ -501,20 +508,20 @@ n_lower      <- sum(diff_summary$direction == "Atheroma < Intact")
 n_comparable <- sum(diff_summary$direction == "Comparable")
 p_paired <- wilcox.test(diff_summary$Atheroma, diff_summary$Intact, paired = TRUE)$p.value
 
-# ©¤©¤ ÅäÉ«Âß¼­ÓÅ»¯: µã(×éÖ¯)ÓëÏß(·½Ïò)ÓÃÁ½Ì×²»³åÍ»µÄÉ«Ïµ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-# µã = ×éÖ¯ÀàĞÍ: Intact Àä»ÒÀ¶ / Atheroma Å¯ºì (ÀäÅ¯¶Ô±È)
+# â”€â”€ é…è‰²é€»è¾‘ä¼˜åŒ–: ç‚¹(ç»„ç»‡)ä¸çº¿(æ–¹å‘)ç”¨ä¸¤å¥—ä¸å†²çªçš„è‰²ç³» â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ç‚¹ = ç»„ç»‡ç±»å‹: Intact å†·ç°è“ / Atheroma æš–çº¢ (å†·æš–å¯¹æ¯”)
 tissue_col <- c("Intact" = "#5B8BA6", "Atheroma" = "#D1495B")
-# Ïß = ±ä»¯·½Ïò: Éı¸ß ³È / ³ÖÆ½ Ç³»Ò / ·´Ïò ÉîÀ¶×Ï (ÓëµãÉ«´í¿ª, ±ÜÃâ»ìÏı)
-direction_col <- c("Atheroma > Intact" = "#E8772E",   # ³È (Éı¸ß)
-                   "Comparable"        = "#C9C9C9",   # Ç³»Ò (³ÖÆ½)
-                   "Atheroma < Intact" = "#3B5BA5")   # À¶×Ï (·´Ïò)
+# çº¿ = å˜åŒ–æ–¹å‘: å‡é«˜ æ©™ / æŒå¹³ æµ…ç° / åå‘ æ·±è“ç´« (ä¸ç‚¹è‰²é”™å¼€, é¿å…æ··æ·†)
+direction_col <- c("Atheroma > Intact" = "#E8772E",   # æ©™ (å‡é«˜)
+                   "Comparable"        = "#C9C9C9",   # æµ…ç° (æŒå¹³)
+                   "Atheroma < Intact" = "#3B5BA5")   # è“ç´« (åå‘)
 
 df_plot <- df_paired %>%
   left_join(diff_summary %>% dplyr::select(patient_id, direction), by = "patient_id")
 df_plot$direction <- factor(df_plot$direction,
                             levels = c("Atheroma > Intact","Comparable","Atheroma < Intact"))
 
-# ©¤©¤ Åä¶ÔÁ¬ÏßÍ¼ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ é…å¯¹è¿çº¿å›¾ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 p_D <- ggplot(df_plot, aes(x = tissue_short, y = TREM2_LAM, group = patient_id)) +
   geom_line(aes(color = direction, linewidth = direction, alpha = direction)) +
   geom_point(aes(fill = tissue_short), shape = 21, size = 3.0,
@@ -555,12 +562,12 @@ ggsave(paste0(out_dir, "Fig6D_single.png"), p_D, width = 7, height = 5.5, dpi = 
 cat("\nFig 6D single saved\n")
 
 --------------------------------------------------------------------------------
-  # FigG ¡ª GSE43292 within-patient concordance£¨µ¥Í¼£ººáÏò¶ÑµşÖù£©
-  # ´Ó×óµ½ÓÒ£ººì Atheroma>Intact / Ç³»Ò Comparable / À¶ Atheroma<Intact
+  # FigG â€” GSE43292 within-patient concordanceï¼ˆå•å›¾ï¼šæ¨ªå‘å †å æŸ±ï¼‰
+  # ä»å·¦åˆ°å³ï¼šçº¢ Atheroma>Intact / æµ…ç° Comparable / è“ Atheroma<Intact
 suppressMessages({ library(tidyverse); library(ggplot2) })
-out_dir <- "G:/13sample/Fig6/"
+out_dir <- paste0(getOption("cea.project_root"), "/Fig6/")
 ver     <- "v2"
-## ©¤©¤ Êı¾İ×¼±¸ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+## â”€â”€ æ•°æ®å‡†å¤‡ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 score_43292 <- read.csv(paste0(out_dir, "Fig6_GSE43292_scores.csv"), stringsAsFactors = FALSE)
 paired_info <- read.csv(paste0(out_dir, "GSE43292_paired_info.csv"), stringsAsFactors = FALSE)
 
@@ -581,9 +588,9 @@ n_higher     <- sum(diff_summary$direction == "Atheroma > Intact")
 n_lower      <- sum(diff_summary$direction == "Atheroma < Intact")
 n_comparable <- sum(diff_summary$direction == "Comparable")
 
-## ©¤©¤ Í³¼ÆÊı¾İ¿ò ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-## ºáÏò£¨coord_flip ºó£©£ºfactor µÄµÚÒ»¸ö level ÅÅÔÚ×î×ó¡£
-## Òª"×óºìÓÒÀ¶"£¬factor Ë³ĞòÉèÎª ºì¡¢»Ò¡¢À¶¡£
+## â”€â”€ ç»Ÿè®¡æ•°æ®æ¡† â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+## æ¨ªå‘ï¼ˆcoord_flip åï¼‰ï¼šfactor çš„ç¬¬ä¸€ä¸ª level æ’åœ¨æœ€å·¦ã€‚
+## è¦"å·¦çº¢å³è“"ï¼Œfactor é¡ºåºè®¾ä¸º çº¢ã€ç°ã€è“ã€‚
 concordance_df <- data.frame(
   category = c("Atheroma > Intact", "Comparable", "Atheroma < Intact"),
   count    = c(n_higher, n_comparable, n_lower)
@@ -592,11 +599,11 @@ concordance_df <- data.frame(
          category = factor(category,
                            levels = c("Atheroma > Intact", "Comparable", "Atheroma < Intact")))
 
-direction_col <- c("Atheroma > Intact" = "#8B0000",   # ºì
-                   "Comparable"        = "#BBBBBB",   # Ç³»Ò
-                   "Atheroma < Intact" = "#3A6FA0")   # À¶
+direction_col <- c("Atheroma > Intact" = "#8B0000",   # çº¢
+                   "Comparable"        = "#BBBBBB",   # æµ…ç°
+                   "Atheroma < Intact" = "#3A6FA0")   # è“
 
-## ©¤©¤ ºáÏò¶ÑµşÖù ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+## â”€â”€ æ¨ªå‘å †å æŸ± â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 p <- ggplot(concordance_df, aes(x = "", y = count, fill = category)) +
   geom_col(width = 0.5, color = "black", linewidth = 0.5) +
   geom_text(aes(label = label), position = position_stack(vjust = 0.5),
@@ -631,9 +638,9 @@ ggsave(paste0(out_dir, "Fig6_concordance_", ver, ".png"), p, width = 6.5, height
 cat("\nsaved Fig6_concordance_", ver, " (pdf/png)\n", sep = "")
 
 --------------------------------------------------------------------------------
-  #FigH--GSE28829 ¡ª TREM2+ LAM score µÄ"½øÕ¹ĞÔ"ÑéÖ¤
-# Ä¿µÄ£º¼ìÑé LAM ssGSEA score ÊÇ·ñËæ¾±¶¯Âö°ß¿é½øÕ¹Éı¸ß
-#       £¨early / pathological intimal thickening  ->  advanced / fibrous cap atheroma£©
+  #FigH--GSE28829 â€” TREM2+ LAM score çš„"è¿›å±•æ€§"éªŒè¯
+# ç›®çš„ï¼šæ£€éªŒ LAM ssGSEA score æ˜¯å¦éšé¢ˆåŠ¨è„‰æ–‘å—è¿›å±•å‡é«˜
+#       ï¼ˆearly / pathological intimal thickening  ->  advanced / fibrous cap atheromaï¼‰
 # if (!require("BiocManager")) install.packages("BiocManager")
 # BiocManager::install(c("GEOquery", "GSVA"))
 # install.packages(c("ggplot2", "pROC"))
@@ -643,70 +650,70 @@ library(GEOquery)
 library(GSVA)
 library(ggplot2)
 
-outdir <- "G:/13sample/Fig6"
+outdir <- paste0(getOption("cea.project_root"), "/Fig6")
 if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
 
 
-## ---- 1. À­È¡ ------------------------------------------------------------
+## ---- 1. æ‹‰å– ------------------------------------------------------------
 gse  <- getGEO("GSE28829", GSEMatrix = TRUE, AnnotGPL = TRUE)[[1]]
-expr <- Biobase::exprs(gse)        # Ì½Õë¼¶¾ØÕó£¨series matrix ÒÑ¹éÒ»»¯£©
+expr <- Biobase::exprs(gse)        # æ¢é’ˆçº§çŸ©é˜µï¼ˆseries matrix å·²å½’ä¸€åŒ–ï¼‰
 fd   <- Biobase::fData(gse)
 pd   <- Biobase::pData(gse)
 
-## ---- 2. ÏÈ¿´·Ö×é×Ö¶Î£¨Îñ±ØÏÈÅÜÕâ¶Î£¬È·ÈÏ early/advanced ÔõÃ´±àÂë£©-------
-cat("\n--- pData ºòÑ¡·Ö×éÁĞ ---\n")
+## ---- 2. å…ˆçœ‹åˆ†ç»„å­—æ®µï¼ˆåŠ¡å¿…å…ˆè·‘è¿™æ®µï¼Œç¡®è®¤ early/advanced æ€ä¹ˆç¼–ç ï¼‰-------
+cat("\n--- pData å€™é€‰åˆ†ç»„åˆ— ---\n")
 cand <- grep("characteristics|title|source", colnames(pd), ignore.case = TRUE)
 print(head(pd[, cand, drop = FALSE], 4))
 
 
-## ---- 3. ·Ö×é£¨°´Ğèµ÷Õû pattern / ÁĞÃû£©----------------------------------
+## ---- 3. åˆ†ç»„ï¼ˆæŒ‰éœ€è°ƒæ•´ pattern / åˆ—åï¼‰----------------------------------
 lab <- tolower(paste(pd$title, pd$source_name_ch1, pd$characteristics_ch1))
 grp <- ifelse(grepl("advanced|fibrous", lab), "advanced",
               ifelse(grepl("early|intimal",   lab), "early", NA))
 grp <- factor(grp, levels = c("early", "advanced"))
 
-cat("\n--- ·Ö×é¼ÆÊı£¨Ó¦Îª early=13, advanced=16£©---\n")
+cat("\n--- åˆ†ç»„è®¡æ•°ï¼ˆåº”ä¸º early=13, advanced=16ï¼‰---\n")
 print(table(grp, useNA = "ifany"))
-stopifnot(sum(!is.na(grp)) == ncol(expr))   # Ã»ÓĞÂ©·Ö£»Èô±¨´íËµÃ÷ pattern Òª¸Ä
+stopifnot(sum(!is.na(grp)) == ncol(expr))   # æ²¡æœ‰æ¼åˆ†ï¼›è‹¥æŠ¥é”™è¯´æ˜ pattern è¦æ”¹
 
-## ---- 4. Ì½Õë -> »ùÒò·ûºÅ£¨È¡±í´ï¾ùÖµ×î¸ßµÄÌ½Õë£©-------------------------
+## ---- 4. æ¢é’ˆ -> åŸºå› ç¬¦å·ï¼ˆå–è¡¨è¾¾å‡å€¼æœ€é«˜çš„æ¢é’ˆï¼‰-------------------------
 sym_col <- grep("^gene symbol$", colnames(fd), ignore.case = TRUE, value = TRUE)[1]
 sym <- as.character(fd[[sym_col]])
-keep <- !is.na(sym) & sym != "" & !grepl("///", sym)   # È¥µô¿Õ/¶àÓ³ÉäÌ½Õë
+keep <- !is.na(sym) & sym != "" & !grepl("///", sym)   # å»æ‰ç©º/å¤šæ˜ å°„æ¢é’ˆ
 expr <- expr[keep, ]; sym <- sym[keep]
 rownames(expr) <- sym
 expr <- expr[order(rowMeans(expr), decreasing = TRUE), ]
-expr <- expr[!duplicated(rownames(expr)), ]            # Ã¿»ùÒò±£Áô×î¸ß±í´ïÌ½Õë
-cat(sprintf("\n»ùÒòÊı£¨È¥ÖØºó£©£º%d\n", nrow(expr)))
+expr <- expr[!duplicated(rownames(expr)), ]            # æ¯åŸºå› ä¿ç•™æœ€é«˜è¡¨è¾¾æ¢é’ˆ
+cat(sprintf("\nåŸºå› æ•°ï¼ˆå»é‡åï¼‰ï¼š%d\n", nrow(expr)))
 
-## ---- 5. 21 »ùÒò LAM Çåµ¥ ----------
+## ---- 5. 21 åŸºå›  LAM æ¸…å• ----------
 lam_genes <- c(
   "TREM2", "APOE", "SPP1", "GPNMB", "LIPA", "FABP5",
   "CTSD", "CTSB", "CD9", "CD63", "LGALS3", "FABP4",
   "PLIN2", "CD36", "MMP9", "ACP5", "LPL",
   "SLC11A1", "CTSL", "CTSK", "CTSS"
 )
-stopifnot(length(lam_genes) >= 1)   # ÌáĞÑ£ºÃ»Ìî»áÔÚ´ËÍ£ÏÂ
+stopifnot(length(lam_genes) >= 1)   # æé†’ï¼šæ²¡å¡«ä¼šåœ¨æ­¤åœä¸‹
 present <- intersect(lam_genes, rownames(expr))
-cat(sprintf("LAM »ùÒòÓ³ÉäÉÏ£º%d / %d\n", length(present), length(lam_genes)))
+cat(sprintf("LAM åŸºå› æ˜ å°„ä¸Šï¼š%d / %d\n", length(present), length(lam_genes)))
 if (length(present) < length(lam_genes))
-  cat("Î´Ó³Éä£º", setdiff(lam_genes, rownames(expr)), "\n")
+  cat("æœªæ˜ å°„ï¼š", setdiff(lam_genes, rownames(expr)), "\n")
 
-## ---- 6. ssGSEA ´ò·Ö£©-------------------------------------
+## ---- 6. ssGSEA æ‰“åˆ†ï¼‰-------------------------------------
 score <- as.numeric(gsva(expr, list(LAM = present), method = "ssgsea"))
-## --- ÈôÄãµÄ GSVA ÊÇ¾É°æ£¬×¢ÊÍÉÏÃæÁ½ĞĞ£¬¸ÄÓÃ£º ---
+## --- è‹¥ä½ çš„ GSVA æ˜¯æ—§ç‰ˆï¼Œæ³¨é‡Šä¸Šé¢ä¸¤è¡Œï¼Œæ”¹ç”¨ï¼š ---
 # score <- as.numeric(gsva(expr, list(LAM = present), method = "ssgsea"))
 
 df <- data.frame(sample = colnames(expr), LAM = score, group = grp)
 
-## ---- 7. Í³¼Æ + AUC£©----------------------------------
+## ---- 7. ç»Ÿè®¡ + AUCï¼‰----------------------------------
 w <- wilcox.test(LAM ~ group, data = df)            # early vs advanced
 cat("\n=== Wilcoxon (early vs advanced) ===\n"); print(w)
 
-# ·½ÏòºË¶Ô£ºÖĞÎ»ÊıÓ¦µ± advanced > early
+# æ–¹å‘æ ¸å¯¹ï¼šä¸­ä½æ•°åº”å½“ advanced > early
 print(tapply(df$LAM, df$group, median))
 
-# Óë Fig6 Ò»ÖÂµÄ AUC£¨advanced ÎªÑôĞÔÀà£©
+# ä¸ Fig6 ä¸€è‡´çš„ AUCï¼ˆadvanced ä¸ºé˜³æ€§ç±»ï¼‰
 if (requireNamespace("pROC", quietly = TRUE)) {
   roc <- pROC::roc(df$group, df$LAM, levels = c("early", "advanced"),
                    direction = "<", quiet = TRUE)
@@ -714,7 +721,7 @@ if (requireNamespace("pROC", quietly = TRUE)) {
   cat(sprintf("AUC = %.2f (95%% CI %.2f-%.2f)\n", as.numeric(roc$auc), ci[1], ci[3]))
 }
 
-## ---- 8. ÏäÏßÍ¼-------------------
+## ---- 8. ç®±çº¿å›¾-------------------
 p <- ggplot(df, aes(group, LAM, fill = group)) +
   geom_boxplot(width = 0.55, outlier.shape = NA) +
   geom_jitter(width = 0.12, size = 1.8, alpha = 0.85) +

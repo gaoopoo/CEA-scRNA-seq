@@ -1,14 +1,21 @@
+# Project root: the folder containing SMC/, macro/, Fig3/, Fig5_CellChat/, etc.
+# Every path in this script is built from this one setting, so the code no longer
+# depends on a single hard-coded drive letter. Either start R/RStudio in the
+# project root, or edit the one line below to point at it directly.
+# Stored as an R option so it survives the rm(list = ls()) calls between sections.
+options(cea.project_root = normalizePath(".", mustWork = FALSE))
+
 #-----Figure 5. TREM2??? mature lipid-associated macrophages (LAMs) occupy a late repair-associated state along the monocyte-to-macrophage continuum
 rm(list = ls())
 library(Seurat)
 library(tidyverse)
 library(patchwork)
 
-setwd("G:/13sample/macro")
+setwd(paste0(getOption("cea.project_root"), "/macro"))
 macro <- readRDS(file = "macro.rds")
 -----------------------------------------------------------------------------
   # ============================================================================
-# ¹²ÓÃ×¼±¸´úÂë£ºÔ­Â·¾¶¶¨Î»Óë 00_common.R ÍêÕûÔ­ÎÄ
+# å…±ç”¨å‡†å¤‡ä»£ç ï¼šåŽŸè·¯å¾„å®šä½ä¸Ž 00_common.R å®Œæ•´åŽŸæ–‡
 # ==============================================================================
 
 
@@ -24,9 +31,9 @@ FIG4_HOME <- dirname(source_path)
 options(stringsAsFactors = FALSE)
 if (dir.exists(file.path(FIG4_HOME,"R-library"))) .libPaths(c(file.path(FIG4_HOME,"R-library"),.libPaths()))
 cfg <- list(
-  input = "G:/13sample/macro/macro.rds",
-  existing_pb = "G:/13sample/macro/Fig4D/Fig4D_donor_pseudobulk_results",
-  old_trajectory = "G:/13sample/macro/Fig4E/macro_with_pseudotime_3grp.rds",
+  input = paste0(getOption("cea.project_root"), "/macro/macro.rds"),
+  existing_pb = paste0(getOption("cea.project_root"), "/macro/Fig4D/Fig4D_donor_pseudobulk_results"),
+  old_trajectory = paste0(getOption("cea.project_root"), "/macro/Fig4E/macro_with_pseudotime_3grp.rds"),
   populations = c("Monocytes", "Macrophages1", "Macrophages2"),
   groups = c("ASYM", "SYM"), min_cells = 20L, seed = 20260901L,
   bootstrap = 5000L, bins = 15L, bin_cells = 10L, bin_donors = 4L,
@@ -260,11 +267,11 @@ suppressMessages({
   library(patchwork)
 })
 
-macro <- readRDS("G:/13sample/macro/macro.rds")
-out_dir <- "G:/13sample/macro/Fig4C_v3/"
+macro <- readRDS(paste0(getOption("cea.project_root"), "/macro/macro.rds"))
+out_dir <- paste0(getOption("cea.project_root"), "/macro/Fig4C_v3/")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
-# ©¤©¤ 1. ×¼±¸ subset ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 1. å‡†å¤‡ subset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 macro$lam_vs_mono <- case_when(
   macro$celltype %in% c("Macrophages1", "Macrophages2") ~ "LAM_lineage",
   macro$celltype == "Monocytes" ~ "Monocytes",
@@ -275,7 +282,7 @@ macro_sub <- subset(macro, subset = !is.na(lam_vs_mono))
 Idents(macro_sub) <- macro_sub$lam_vs_mono
 cat("Subset cells:\n"); print(table(Idents(macro_sub)))
 
-# ©¤©¤ 2. È«»ùÒò×é DE£¨ÓÃÓÚ¹¹½¨ ranked list£©©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 2. å…¨åŸºå› ç»„ DEï¼ˆç”¨äºŽæž„å»º ranked listï¼‰â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 cat("\nRunning FindMarkers on all genes (this takes ~2-5 min)...\n")
 de_all <- FindMarkers(macro_sub,
                       ident.1 = "LAM_lineage",
@@ -293,13 +300,13 @@ ranks <- de_all$avg_log2FC
 names(ranks) <- de_all$gene
 ranks <- sort(ranks, decreasing = TRUE)
 
-# ¼òµ¥Õï¶Ï
+# ç®€å•è¯Šæ–­
 cat("Top 10 ranked genes (LAM lineage up):\n")
 print(head(ranks, 10))
 cat("\nBottom 10 ranked genes (Monocytes up):\n")
 print(tail(ranks, 10))
 
-# ©¤©¤ 3. 3 ¸ö·¢±íµÄ TREM2??? LAM signature ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 3. 3 ä¸ªå‘è¡¨çš„ TREM2??? LAM signature â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 LAM_signatures <- list(
   
   Cochain_2018 = c("TREM2","CD9","SPP1","GPNMB","LPL","FABP5",
@@ -318,7 +325,7 @@ LAM_signatures <- list(
                      "C1QB","C1QC")
 )
 
-# ¹ýÂËµ½ ranked list Àï´æÔÚµÄ»ùÒò
+# è¿‡æ»¤åˆ° ranked list é‡Œå­˜åœ¨çš„åŸºå› 
 LAM_signatures <- lapply(LAM_signatures, function(g) intersect(g, names(ranks)))
 
 cat("\nSignature coverage:\n")
@@ -326,7 +333,7 @@ for (sig_name in names(LAM_signatures)) {
   cat("  ", sig_name, ":", length(LAM_signatures[[sig_name]]), "genes\n")
 }
 
-# ©¤©¤ 4. ÅÜ fgsea ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 4. è·‘ fgsea â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 set.seed(42)
 gsea_result <- fgseaMultilevel(
   pathways = LAM_signatures,
@@ -341,14 +348,14 @@ gsea_result <- fgseaMultilevel(
 cat("\n=== GSEA Results ===\n")
 print(gsea_result %>% select(pathway, NES, pval, padj, size))
 
-# ±£´æ½á¹û
+# ä¿å­˜ç»“æžœ
 write.csv(gsea_result %>%
             select(pathway, NES, pval, padj, size, leadingEdge) %>%
             mutate(leadingEdge = sapply(leadingEdge, paste, collapse = ";")),
           paste0(out_dir, "GSEA_results.csv"),
           row.names = FALSE)
 
-# ©¤©¤ 5. ÃÀ»¯°æ GSEA enrichment plot ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 5. ç¾ŽåŒ–ç‰ˆ GSEA enrichment plot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 plot_gsea_curve <- function(pathway_name, ranks, pathway_genes, gsea_row) {
   
   ranks_sorted <- sort(ranks, decreasing = TRUE)
@@ -367,7 +374,7 @@ plot_gsea_curve <- function(pathway_name, ranks, pathway_genes, gsea_row) {
   
   df_curve <- data.frame(rank = seq_along(running_ES), ES = running_ES)
   
-  # ES ÇúÏß
+  # ES æ›²çº¿
   p1 <- ggplot(df_curve, aes(x = rank, y = ES)) +
     geom_line(color = curve_color, linewidth = 1.2) +
     geom_hline(yintercept = 0, color = "grey60", linewidth = 0.3) +
@@ -389,7 +396,7 @@ plot_gsea_curve <- function(pathway_name, ranks, pathway_genes, gsea_row) {
           axis.text.x = element_blank(),
           axis.ticks.x = element_blank())
   
-  # ÃüÖÐÎ»ÖÃ ticks
+  # å‘½ä¸­ä½ç½® ticks
   hit_ranks <- which(hits)
   df_hits <- data.frame(rank = hit_ranks)
   
@@ -397,7 +404,7 @@ plot_gsea_curve <- function(pathway_name, ranks, pathway_genes, gsea_row) {
     geom_segment(aes(xend = rank, y = 0, yend = 1),
                  color = curve_color, linewidth = 0.4) +
     xlim(0, N) +
-    labs(x = "Gene rank (¡û LAM lineage up | Monocytes up ¡ú)") +
+    labs(x = "Gene rank (â† LAM lineage up | Monocytes up â†’)") +
     theme_classic(base_size = 10) +
     theme(axis.text.y = element_blank(),
           axis.ticks.y = element_blank(),
@@ -410,7 +417,7 @@ plot_gsea_curve <- function(pathway_name, ranks, pathway_genes, gsea_row) {
   p1 / p2 + plot_layout(heights = c(4, 0.6))
 }
 
-# Éú³É 3 ÕÅ
+# ç”Ÿæˆ 3 å¼ 
 gsea_plots <- list()
 for (i in seq_len(nrow(gsea_result))) {
   sig_name <- gsea_result$pathway[i]
@@ -422,7 +429,7 @@ for (i in seq_len(nrow(gsea_result))) {
   )
 }
 
-# Æ´½Ó
+# æ‹¼æŽ¥
 p_C <- gsea_plots[[1]] | gsea_plots[[2]] | gsea_plots[[3]]
 p_C <- p_C + plot_annotation(
   title = "Figure 4C. TREM2??? LAM lineage validated by three independent published signatures",
@@ -582,10 +589,10 @@ suppressPackageStartupMessages({
 # 1. Paths and prespecified settings
 # ==============================================================================
 
-input_rds <- "G:/13sample/macro/macro.rds"
+input_rds <- paste0(getOption("cea.project_root"), "/macro/macro.rds")
 
 out_dir <- file.path(
-  "G:/13sample/A ¾±¶¯Âöµ¥Ï¸°ûÎÄÕÂ/TREM2??? macrophage¨Creparative fibroblast healing axis",
+  paste0(getOption("cea.project_root"), "/A é¢ˆåŠ¨è„‰å•ç»†èƒžæ–‡ç« /TREM2??? macrophageâ€“reparative fibroblast healing axis"),
   "Communications_Biology_submission/Communications_Biology_submission",
   "Fig4D_donor_pseudobulk_results"
 )
@@ -886,7 +893,7 @@ write.csv(
 )
 
 # ==========================================================================================
-# E£ºµ±Ç°¶ÔÓ¦ÆÀ·ÖÍ¼£¨Ô­ pC£©
+# Eï¼šå½“å‰å¯¹åº”è¯„åˆ†å›¾ï¼ˆåŽŸ pCï¼‰
 # ==========================================================================================
 
 local({

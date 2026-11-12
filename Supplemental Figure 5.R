@@ -1,12 +1,19 @@
+# Project root: the folder containing SMC/, macro/, Fig3/, Fig5_CellChat/, etc.
+# Every path in this script is built from this one setting, so the code no longer
+# depends on a single hard-coded drive letter. Either start R/RStudio in the
+# project root, or edit the one line below to point at it directly.
+# Stored as an R option so it survives the rm(list = ls()) calls between sections.
+options(cea.project_root = normalizePath(".", mustWork = FALSE))
+
 #-Supplemental Figure 5
-# Figure 5 ¡ª ÍøÂçÖĞĞÄĞÔ·ÖÎö
+# Figure 5 â€” ç½‘ç»œä¸­å¿ƒæ€§åˆ†æ
 suppressMessages({
   library(CellChat); library(tidyverse); library(ggplot2)
   library(patchwork); library(ggrepel)
 })
 
-setwd("G:/13sample")
-out_dir <- "G:/13sample/Fig5_centrality/"
+setwd(getOption("cea.project_root"))
+out_dir <- paste0(getOption("cea.project_root"), "/Fig5_centrality/")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
 cellchat_sym <- readRDS("cellchat/cellchat_sym.rds")
@@ -18,7 +25,7 @@ celltype_short <- c("Fibroblasts1"="Fibro1","Fibroblasts2"="Fibro2",
                     "Proliferating cells2"="PRFs","SMCs1"="SMC1","SMCs3"="SMC3",
                     "Macrophages2"="mLAM","ECs"="ECs","T cells1"="T cells")
 
-# ©¤©¤ ÌáÈ¡ Sender / Receiver (¾ÛºÏÍ¨Â·) ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ æå– Sender / Receiver (èšåˆé€šè·¯) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 centr <- cellchat_sym@netP$centr
 all_cells <- levels(cellchat_sym@idents)
 n_cells <- length(all_cells)
@@ -38,12 +45,12 @@ role_core <- data.frame(cell = all_cells,
 norm01 <- function(x) (x-min(x))/(max(x)-min(x)+1e-9)
 role_norm <- role_core %>% mutate(across(c(Sender,Receiver), norm01))
 
-cat("\n=== Sender / Receiver µÃ·Ö ===\n")
+cat("\n=== Sender / Receiver å¾—åˆ† ===\n")
 print(role_core %>% mutate(across(where(is.numeric),~round(.,3))) %>% arrange(desc(Receiver)))
 write.csv(role_core %>% mutate(across(where(is.numeric),~round(.,4))),
           paste0(out_dir,"centrality_scores_SR.csv"), row.names=FALSE)
 
-# ©¤©¤ Í¼1: heatmap (Ï¸°û ¡Á Sender/Receiver) ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ å›¾1: heatmap (ç»†èƒ Ã— Sender/Receiver) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 hm <- role_norm %>% dplyr::select(short, Sender, Receiver) %>%
   pivot_longer(-short, names_to="role", values_to="score")
 hm$role <- factor(hm$role, levels=c("Sender","Receiver"))
@@ -91,10 +98,10 @@ set.seed(20260901)
 # 1. Paths and fixed settings
 # -----------------------------------------------------------------------------
 
-mesenchymal_rds <- "G:/13sample/Fig3/Fig3_v3/fib_prf_v3_pseudotime.rds"
-macrophage_rds  <- "G:/13sample/macro/Fig4E/macro_with_pseudotime_3grp.rds"
+mesenchymal_rds <- paste0(getOption("cea.project_root"), "/Fig3/Fig3_v3/fib_prf_v3_pseudotime.rds")
+macrophage_rds  <- paste0(getOption("cea.project_root"), "/macro/Fig4E/macro_with_pseudotime_3grp.rds")
 
-output_dir <- "G:/13sample/Fig5_CellChat/Fig5_temporal_donor_validation"
+output_dir <- paste0(getOption("cea.project_root"), "/Fig5_CellChat/Fig5_temporal_donor_validation")
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
 analysis_groups <- c("ASYM", "SYM")
@@ -449,7 +456,7 @@ set.seed(20260901)
 # 1. Paths and prespecified settings
 # -----------------------------------------------------------------------------
 
-output_dir <- "G:/13sample/Fig5_CellChat/Fig5_temporal_donor_validation"
+output_dir <- paste0(getOption("cea.project_root"), "/Fig5_CellChat/Fig5_temporal_donor_validation")
 score_rds <- file.path(output_dir, "Fig5S_cell_level_module_scores.rds")
 donor_mean_csv <- file.path(output_dir, "Fig5S_donor_module_means.csv")
 
@@ -933,7 +940,7 @@ set.seed(20260901)
 # =============================================================================
 
 output_dir <- paste0(
-  "G:/13sample/Fig5_CellChat/",
+  paste0(getOption("cea.project_root"), "/Fig5_CellChat/"),
   "Fig5_temporal_donor_validation"
 )
 
@@ -2322,7 +2329,7 @@ suppressPackageStartupMessages({
 
 set.seed(20260901)
 
-output_dir <- "G:/13sample/Fig5_CellChat/Fig5_temporal_donor_validation"
+output_dir <- paste0(getOption("cea.project_root"), "/Fig5_CellChat/Fig5_temporal_donor_validation")
 result_rds <- file.path(output_dir, "Fig5S_analysis_results.rds")
 stopifnot(file.exists(result_rds))
 
@@ -2913,16 +2920,16 @@ message(file.path(output_dir, "Fig5S_interpretation_guardrails.txt"))
 
 
 --------------------------------------------------------------------------------
-  # FigureE ¡ª Ê±Ğò¿ÉÊÓ»¯ v3 
+  # FigureE â€” æ—¶åºå¯è§†åŒ– v3 
 suppressMessages({
   library(Seurat); library(tidyverse); library(ggplot2); library(ggridges); library(patchwork)
 })
 
-setwd("G:/13sample")
-out_dir <- "G:/13sample/Fig5_temporal/"
+setwd(getOption("cea.project_root"))
+out_dir <- paste0(getOption("cea.project_root"), "/Fig5_temporal/")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
-# ©¤©¤ ÈıÄ£¿é»ùÒò ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ ä¸‰æ¨¡å—åŸºå›  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 mod_initiate <- c("POSTN","TNC","COMP","THBS1","THBS2","SPARC","CCN2","CCN1","CTGF","CYR61")
 mod_execute  <- c("COL1A1","COL1A2","COL3A1","COL4A1","COL5A1","COL6A1","COL6A2","COL6A3",
                   "FN1","LAMA4","LAMB1","LAMC1","SPP1")
@@ -2934,30 +2941,30 @@ mod_labs <- c("Module1_Initiate"="Initiate (matricellular)",
               "Module2_Execute"="Execute (ECM)",
               "Module3_Integrate"="Integrate (immune)")
 
-# ©¤©¤ ÌáÈ¡Ä£¿éscore + pseudotime, ²¢ min-max ±ê×¼»¯ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ æå–æ¨¡å—score + pseudotime, å¹¶ min-max æ ‡å‡†åŒ– â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 get_score_df <- function(obj, pt_col, show_modules) {
   mods <- lapply(modules_all, function(g) intersect(g, rownames(obj)))
   obj <- AddModuleScore(obj, features=mods, name="Mod_", assay="RNA")
   sc <- paste0("Mod_", seq_along(mods))
   df <- obj@meta.data[, c(pt_col, sc)]; colnames(df) <- c("pseudotime", names(mods))
   df <- df[is.finite(df$pseudotime), c("pseudotime", show_modules)]
-  # ±ê×¼»¯ pseudotime µ½ 0-1 (±ãÓÚÁ½Æ×Ïµ¶ÔÆëÕ¹Ê¾)
+  # æ ‡å‡†åŒ– pseudotime åˆ° 0-1 (ä¾¿äºä¸¤è°±ç³»å¯¹é½å±•ç¤º)
   df$pt_norm <- (df$pseudotime - min(df$pseudotime))/(max(df$pseudotime)-min(df$pseudotime))
   df
 }
 
-# min-max ±ê×¼»¯Ã¿¸öÄ£¿éµÄscore (ÈÃ·ù¶È¿É±È)
+# min-max æ ‡å‡†åŒ–æ¯ä¸ªæ¨¡å—çš„score (è®©å¹…åº¦å¯æ¯”)
 norm01 <- function(x){ r<-range(x,na.rm=TRUE); (x-r[1])/(r[2]-r[1]+1e-9) }
 
-# ©¤©¤ »æÍ¼º¯Êı: ±ê×¼»¯ÇúÏß + ´ï·åÊúÏß ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ ç»˜å›¾å‡½æ•°: æ ‡å‡†åŒ–æ›²çº¿ + è¾¾å³°ç«–çº¿ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 plot_temporal_clean <- function(df, show_modules, title, subtitle) {
   long <- df %>% dplyr::select(pt_norm, all_of(show_modules)) %>%
     pivot_longer(-pt_norm, names_to="module", values_to="score")
-  # Ã¿Ä£¿é±ê×¼»¯
+  # æ¯æ¨¡å—æ ‡å‡†åŒ–
   long <- long %>% group_by(module) %>% mutate(score_n = norm01(score)) %>% ungroup()
   long$module <- factor(long$module, levels=show_modules)
   
-  # loessÄâºÏÇó´ï·å
+  # loessæ‹Ÿåˆæ±‚è¾¾å³°
   peaks <- data.frame()
   for (m in show_modules) {
     sub <- long %>% filter(module==m) %>% arrange(pt_norm)
@@ -2984,9 +2991,9 @@ plot_temporal_clean <- function(df, show_modules, title, subtitle) {
 }
 
 # ============================================================================
-# Æ×Ïµ1: ¼äÖÊ ¡ª Õ¹Ê¾ Initiate & Execute (ÔçÆÚ)
+# è°±ç³»1: é—´è´¨ â€” å±•ç¤º Initiate & Execute (æ—©æœŸ)
 # ============================================================================
-mes <- readRDS("G:/13sample/Fig3_v3/fib_prf_v3_pseudotime.rds")  
+mes <- readRDS(paste0(getOption("cea.project_root"), "/Fig3_v3/fib_prf_v3_pseudotime.rds"))  
 pt_mes <- "pseudotime"                         
 df_mes <- get_score_df(mes, pt_mes, c("Module1_Initiate","Module2_Execute"))
 p_mes <- plot_temporal_clean(df_mes, c("Module1_Initiate","Module2_Execute"),
@@ -2994,17 +3001,17 @@ p_mes <- plot_temporal_clean(df_mes, c("Module1_Initiate","Module2_Execute"),
                              "Matricellular initiation and ECM execution peak early and are tightly coupled")
 
 # ============================================================================
-# Æ×Ïµ2: ¾ŞÊÉ ¡ª Õ¹Ê¾ Execute & Integrate (ÃâÒßºó)
+# è°±ç³»2: å·¨å™¬ â€” å±•ç¤º Execute & Integrate (å…ç–«å)
 # ============================================================================
 macro <- readRDS("macro/Fig4E/macro_with_pseudotime_3grp.rds")
 pt_macro <- grep("pseudotime|Pseudotime|monocle", colnames(macro@meta.data), value=TRUE)[1]
-cat("¾ŞÊÉpseudotimeÁĞ:", pt_macro, "\n")
+cat("å·¨å™¬pseudotimeåˆ—:", pt_macro, "\n")
 df_mac <- get_score_df(macro, pt_macro, c("Module2_Execute","Module3_Integrate"))
 p_mac <- plot_temporal_clean(df_mac, c("Module2_Execute","Module3_Integrate"),
                              "Late immune-integration phase (macrophage lineage)",
                              "Immune integration peaks markedly later, at TREM2\u207a LAM maturation")
 
-# ©¤©¤ ×éºÏÍ¼ (Á½Æ×Ïµ²¢ÅÅ, ½²ÇåÁ½½×¶Î) ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ ç»„åˆå›¾ (ä¸¤è°±ç³»å¹¶æ’, è®²æ¸…ä¸¤é˜¶æ®µ) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 p_combined <- p_mes + p_mac + plot_layout(ncol=2) +
   plot_annotation(title="Two-phase temporal organization of the healing program",
                   theme=theme(plot.title=element_text(face="bold",size=14)))
@@ -3012,7 +3019,7 @@ ggsave(paste0(out_dir,"temporal_clean_combined.pdf"), p_combined, width=13, heig
 ggsave(paste0(out_dir,"temporal_clean_combined.png"), p_combined, width=13, height=5.5, dpi=600)
 
 # ============================================================================
-# É½¼¹Í¼ (¸÷Ä£¿é"¸ß»îĞÔÏ¸°û"ÑØpseudotimeµÄÃÜ¶È·Ö²¼)
+# å±±è„Šå›¾ (å„æ¨¡å—"é«˜æ´»æ€§ç»†èƒ"æ²¿pseudotimeçš„å¯†åº¦åˆ†å¸ƒ)
 # ============================================================================
 make_ridge_df <- function(obj, pt_col, lineage){
   mods <- lapply(modules_all, function(g) intersect(g, rownames(obj)))
@@ -3024,7 +3031,7 @@ make_ridge_df <- function(obj, pt_col, lineage){
   df$lineage <- lineage
   df
 }
-# ¸÷Ä£¿éÈ¡"»îĞÔ×î¸ßµÄÇ°40%Ï¸°û", ¿´ËüÃÇµÄpseudotime·Ö²¼
+# å„æ¨¡å—å–"æ´»æ€§æœ€é«˜çš„å‰40%ç»†èƒ", çœ‹å®ƒä»¬çš„pseudotimeåˆ†å¸ƒ
 ridge_long <- bind_rows(
   make_ridge_df(mes, pt_mes, "mes") %>% pivot_longer(c(Module1_Initiate,Module2_Execute),
                                                      names_to="module", values_to="score"),
@@ -3049,9 +3056,9 @@ p_ridge <- ggplot(ridge_long, aes(x=pt_norm, y=module, fill=module)) +
 ggsave(paste0(out_dir,"temporal_ridge.pdf"), p_ridge, width=8, height=4.5, device=cairo_pdf)
 ggsave(paste0(out_dir,"temporal_ridge.png"), p_ridge, width=8, height=4.5, dpi=600)
 
-cat("\nÍê³É. Êä³ö:\n")
-cat("  temporal_clean_combined ¡ª Á½Æ×Ïµ±ê×¼»¯ÇúÏß+´ï·å±ê¼Ç(Ö÷ÍÆ)\n")
-cat("  temporal_ridge ¡ª É½¼¹Í¼(±¸Ñ¡, ×îÖ±¹Û)\n")
+cat("\nå®Œæˆ. è¾“å‡º:\n")
+cat("  temporal_clean_combined â€” ä¸¤è°±ç³»æ ‡å‡†åŒ–æ›²çº¿+è¾¾å³°æ ‡è®°(ä¸»æ¨)\n")
+cat("  temporal_ridge â€” å±±è„Šå›¾(å¤‡é€‰, æœ€ç›´è§‚)\n")
 print(p_combined); print(p_ridge)
 
 

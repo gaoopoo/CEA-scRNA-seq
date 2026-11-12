@@ -1,6 +1,13 @@
-#Figure 6:A three-layered cell¨Ccell communication architecture characterizes a repair-associated program
+# Project root: the folder containing SMC/, macro/, Fig3/, Fig5_CellChat/, etc.
+# Every path in this script is built from this one setting, so the code no longer
+# depends on a single hard-coded drive letter. Either start R/RStudio in the
+# project root, or edit the one line below to point at it directly.
+# Stored as an R option so it survives the rm(list = ls()) calls between sections.
+options(cea.project_root = normalizePath(".", mustWork = FALSE))
 
-# FigA ¡ª ASYM vs SYM dual-axis line plot
+#Figure 6:A three-layered cellâ€“cell communication architecture characterizes a repair-associated program
+
+# FigA â€” ASYM vs SYM dual-axis line plot
 #
 # Number of interactions: solid line + circles (left y-axis)
 # Interaction strength:   dashed line + triangles (right y-axis)
@@ -13,8 +20,8 @@ suppressPackageStartupMessages({
   library(dplyr)
 })
 
-setwd("G:/13sample")
-out_dir <- "G:/13sample/Fig5_v2/"
+setwd(getOption("cea.project_root"))
+out_dir <- paste0(getOption("cea.project_root"), "/Fig5_v2/")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
 group_colors <- c(
@@ -28,7 +35,7 @@ metric_colors <- c(
 )
 
 # ============================================================================
-# Load only ASYM and SYM CellChat objects ¡ª NP/Normal is completely removed
+# Load only ASYM and SYM CellChat objects â€” NP/Normal is completely removed
 # ============================================================================
 cellchat_asym <- readRDS("cellchat/cellchat_asym.rds")
 cellchat_sym  <- readRDS("cellchat/cellchat_sym.rds")
@@ -306,8 +313,8 @@ message("Saved PNG: ", png_file)
 
 
 --------------------------------------------------------------------------------
-  # Figure B ¡ª Top 15 differential pathways (SYM vs ASYM)
-  # 0. »·¾³
+  # Figure B â€” Top 15 differential pathways (SYM vs ASYM)
+  # 0. ç¯å¢ƒ
   # ============================================================================
 rm(list = ls())
 gc()
@@ -319,11 +326,11 @@ suppressMessages({
   library(patchwork)
 })
 
-setwd("G:/13sample")
-out_dir <- "G:/13sample/Fig5_v2/"
+setwd(getOption("cea.project_root"))
+out_dir <- paste0(getOption("cea.project_root"), "/Fig5_v2/")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
-# ©¤©¤ 1. ¼ÓÔØÒÑÓĞ CellChat ¶ÔÏó ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 1. åŠ è½½å·²æœ‰ CellChat å¯¹è±¡ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 cellchat_asym <- readRDS("cellchat/cellchat_asym.rds")
 cellchat_sym  <- readRDS("cellchat/cellchat_sym.rds")
 
@@ -333,13 +340,13 @@ cellchat_2grp <- mergeCellChat(
   cell.prefix = TRUE
 )
 
-# ©¤©¤ 2. ÅÜ rankNet ²¢ÌáÈ¡Êı¾İ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-# rankNet ·µ»Ø ggplot ¶ÔÏó£¬data ÔÚ $data
+# â”€â”€ 2. è·‘ rankNet å¹¶æå–æ•°æ® â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# rankNet è¿”å› ggplot å¯¹è±¡ï¼Œdata åœ¨ $data
 rank_obj <- rankNet(cellchat_2grp, mode = "comparison",
                     stacked = FALSE, do.stat = TRUE,
                     return.data = TRUE)
 
-# ÌáÈ¡Êı¾İ (rankNet µÄ return.data ĞĞÎª)
+# æå–æ•°æ® (rankNet çš„ return.data è¡Œä¸º)
 if (is.list(rank_obj) && "signaling.contribution" %in% names(rank_obj)) {
   rank_df <- rank_obj$signaling.contribution
 } else if (inherits(rank_obj, "ggplot")) {
@@ -352,9 +359,9 @@ cat("rankNet data structure:\n")
 print(head(rank_df))
 print(colnames(rank_df))
 
-# ©¤©¤ 3. ¼ÆËã SYM vs ASYM ²îÒì ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-# ¼ÙÉèÁĞÃû£ºname (pathway), group (ASYM/SYM), contribution / contribution.relative
-# ×ª³É¿í±í
+# â”€â”€ 3. è®¡ç®— SYM vs ASYM å·®å¼‚ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# å‡è®¾åˆ—åï¼šname (pathway), group (ASYM/SYM), contribution / contribution.relative
+# è½¬æˆå®½è¡¨
 rank_wide <- rank_df %>%
   dplyr::select(name, group, contribution) %>%
   pivot_wider(names_from = group, values_from = contribution,
@@ -370,7 +377,7 @@ rank_wide <- rank_df %>%
 
 cat("\nTotal pathways:", nrow(rank_wide), "\n")
 
-# È¡ SYM ÉÏµ÷ top 8 + ASYM ÉÏµ÷ top 7
+# å– SYM ä¸Šè°ƒ top 8 + ASYM ä¸Šè°ƒ top 7
 top_sym <- rank_wide %>%
   filter(direction == "SYM_up") %>%
   arrange(desc(diff_strength)) %>%
@@ -391,7 +398,7 @@ print(top_combined)
 write.csv(top_combined, paste0(out_dir, "Fig5B_top15_pathways.csv"),
           row.names = FALSE)
 
-# ©¤©¤ 4. »­ bar plot ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 4. ç”» bar plot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 p_5B <- ggplot(top_combined,
                aes(x = diff_strength, y = name, fill = direction)) +
   geom_col(color = "black", linewidth = 0.3, width = 0.7) +
@@ -403,7 +410,7 @@ p_5B <- ggplot(top_combined,
       "SYM_up"   = "Enriched in SYM (repair / matrix)",
       "ASYM_up"  = "Enriched in ASYM (inflammation)"),
     name = NULL) +
-  # Í¨Â·±êÇ©·ÅÔÚÖù×ÓµÄÁíÒ»²à
+  # é€šè·¯æ ‡ç­¾æ”¾åœ¨æŸ±å­çš„å¦ä¸€ä¾§
   geom_text(aes(label = name,
                 x = ifelse(diff_strength > 0, -0.5, 0.5),
                 hjust = ifelse(diff_strength > 0, 1, 0)),
@@ -433,8 +440,8 @@ ggsave(paste0(out_dir, "Fig5B_v2.png"), p_5B,
 cat("\n??? Fig 5B v2 saved\n")
 
 --------------------------------------------------------------------------------
-# FigureC ¡ª Three-panel layered architecture
-# ÈıÀ¸¶ÀÁ¢×ÓÍ¼£¬Ã¿À¸Ò»¸ö layer£¬sender-receiver ¹ØÏµÇåÎú
+# FigureC â€” Three-panel layered architecture
+# ä¸‰æ ç‹¬ç«‹å­å›¾ï¼Œæ¯æ ä¸€ä¸ª layerï¼Œsender-receiver å…³ç³»æ¸…æ™°
 
 suppressMessages({
   library(CellChat)
@@ -444,13 +451,13 @@ suppressMessages({
   library(ggrepel)
 })
 
-setwd("G:/13sample")
-out_dir <- "G:/13sample/Fig5_v2/"
+setwd(getOption("cea.project_root"))
+out_dir <- paste0(getOption("cea.project_root"), "/Fig5_v2/")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
 cellchat_sym <- readRDS("cellchat/cellchat_sym.rds")
 
-# ©¤©¤ 1. Êı¾İ×¼±¸£¨ÑØÓÃÖ®Ç°µÄ top_pairs_all£©©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 1. æ•°æ®å‡†å¤‡ï¼ˆæ²¿ç”¨ä¹‹å‰çš„ top_pairs_allï¼‰â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 layer_pathways <- list(
   "Layer 1: Initiator"   = c("PERIOSTIN", "TENASCIN"),
   "Layer 2: Execute"     = c("COLLAGEN", "FN1", "LAMININ", "SPP1"),
@@ -469,7 +476,7 @@ celltype_short <- c(
   "Macrophages2" = "mLAM", "ECs" = "ECs", "T cells1" = "T cells"
 )
 
-# ÌáÈ¡Ã¿²ã top pairs
+# æå–æ¯å±‚ top pairs
 get_top_pairs <- function(obj, pathways, cells, top_n = 5) {
   pairs <- data.frame()
   for (pwy in intersect(pathways, obj@netP$pathways)) {
@@ -489,9 +496,9 @@ get_top_pairs <- function(obj, pathways, cells, top_n = 5) {
   pairs %>% arrange(desc(strength)) %>% head(top_n)
 }
 
-# ©¤©¤ 2. Í¨ÓÃ»æÍ¼º¯Êı£¨Ã¿¸ö layer Ò»¸ö panel£©©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-# ©¤©¤ 2. ÓÅ»¯ºóµÄÍ¨ÓÃ»æÍ¼º¯Êı£¨ÔöÇ¿¼ıÍ·¡¢·ÀÎÄ×ÖÖØµş¡¢ÌáÉı¸ß¼¶¸Ğ£© ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
-# ©¤©¤ 2. ÖÕ¼«ÓÅ»¯°æ»æÍ¼º¯Êı£ºÒıÈë¸ß¼¶ÇúÏß¡¢À©³ä°²È«±ß¾à·ÀÖ¹ÎÄ×Ö±»²Ã ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 2. é€šç”¨ç»˜å›¾å‡½æ•°ï¼ˆæ¯ä¸ª layer ä¸€ä¸ª panelï¼‰â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# â”€â”€ 2. ä¼˜åŒ–åçš„é€šç”¨ç»˜å›¾å‡½æ•°ï¼ˆå¢å¼ºç®­å¤´ã€é˜²æ–‡å­—é‡å ã€æå‡é«˜çº§æ„Ÿï¼‰ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# â”€â”€ 2. ç»ˆæä¼˜åŒ–ç‰ˆç»˜å›¾å‡½æ•°ï¼šå¼•å…¥é«˜çº§æ›²çº¿ã€æ‰©å……å®‰å…¨è¾¹è·é˜²æ­¢æ–‡å­—è¢«è£ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 plot_layer <- function(layer_idx, layer_color, sub_title) {
   layer_name <- names(layer_pathways)[layer_idx]
   pwys <- layer_pathways[[layer_idx]]
@@ -543,7 +550,7 @@ plot_layer <- function(layer_idx, layer_color, sub_title) {
   cell_pos <- cell_pos %>% left_join(cell_roles, by = "cell") %>%
     mutate(short = celltype_short[cell])
   
-  # ¡ï ¹Ø¼üÕï¶Ï£º´òÓ¡ cell_pos ¼ì²éÊÇ·ñÓĞÒì³£
+  # â˜… å…³é”®è¯Šæ–­ï¼šæ‰“å° cell_pos æ£€æŸ¥æ˜¯å¦æœ‰å¼‚å¸¸
   cat("\n--- Layer", layer_idx, "cell_pos ---\n")
   print(cell_pos)
   
@@ -557,7 +564,7 @@ plot_layer <- function(layer_idx, layer_color, sub_title) {
   auto_pairs <- pairs_plot %>% filter(from == to)
   para_pairs <- pairs_plot %>% filter(from != to)
   
-  # ¡ï ĞŞ¸´ 1£º¸øÃ¿Ìõ paracrine ±ß·ÖÅä²»Í¬µÄ curvature ÈÃËüÃÇ´í¿ª
+  # â˜… ä¿®å¤ 1ï¼šç»™æ¯æ¡ paracrine è¾¹åˆ†é…ä¸åŒçš„ curvature è®©å®ƒä»¬é”™å¼€
   if (nrow(para_pairs) > 0) {
     para_pairs <- para_pairs %>%
       mutate(
@@ -577,11 +584,11 @@ plot_layer <- function(layer_idx, layer_color, sub_title) {
   
   p <- ggplot()
   
-  # ¡ï ĞŞ¸´ 2£ºÓÃÑ­»·»­ÇúÏß£¬Ã¿ÌõÓÃ²»Í¬ curvature
-  # curvature ÔÚ -0.3 µ½ 0.3 Ö®¼ä·Ö²¼£¬È·±£¶àÌõÏßÖ®¼ä·Ö¿ª
+  # â˜… ä¿®å¤ 2ï¼šç”¨å¾ªç¯ç”»æ›²çº¿ï¼Œæ¯æ¡ç”¨ä¸åŒ curvature
+  # curvature åœ¨ -0.3 åˆ° 0.3 ä¹‹é—´åˆ†å¸ƒï¼Œç¡®ä¿å¤šæ¡çº¿ä¹‹é—´åˆ†å¼€
   if (nrow(para_pairs) > 0) {
     n_edges <- nrow(para_pairs)
-    # Éú³É²»Í¬µÄ»¡¶ÈÖµ
+    # ç”Ÿæˆä¸åŒçš„å¼§åº¦å€¼
     curv_values <- seq(-0.25, 0.25, length.out = n_edges)
     if (n_edges == 1) curv_values <- 0.08
     
@@ -599,7 +606,7 @@ plot_layer <- function(layer_idx, layer_color, sub_title) {
     }
   }
   
-  # ×Ô·ÖÃÚ»·
+  # è‡ªåˆ†æ³Œç¯
   if (nrow(auto_pairs) > 0) {
     auto_pos <- auto_pairs %>%
       mutate(from = as.character(from)) %>%
@@ -614,20 +621,20 @@ plot_layer <- function(layer_idx, layer_color, sub_title) {
                 fontface = "bold", inherit.aes = FALSE)
   }
   
-  # ½Úµã
+  # èŠ‚ç‚¹
   p <- p +
     geom_point(data = cell_pos, aes(x = x, y = y, size = total),
                shape = 21, fill = layer_color, color = "black",
                stroke = 0.6, alpha = 0.95, inherit.aes = FALSE)
   
-  # ±êÇ©
+  # æ ‡ç­¾
   p <- p +
     geom_text(data = cell_pos,
               aes(x = x, y = y - 0.28, label = short),
               fontface = "bold", color = "black", size = 3.8,
               inherit.aes = FALSE)
   
-  # ¡ï ĞŞ¸´ 3£ºËõĞ¡ plot.margin + ÏÔÊ½ panel.background
+  # â˜… ä¿®å¤ 3ï¼šç¼©å° plot.margin + æ˜¾å¼ panel.background
   p <- p +
     scale_linewidth_continuous(range = c(0.6, 3.0), guide = "none") + 
     scale_alpha_continuous(range = c(0.4, 0.9), guide = "none") +
@@ -641,14 +648,14 @@ plot_layer <- function(layer_idx, layer_color, sub_title) {
                                        color = layer_color),
           plot.subtitle = element_text(size = 9.5, color = "grey30",
                                        lineheight = 1.1),
-          plot.margin   = margin(8, 12, 8, 12),   # ¡ï ¼õĞ¡ margin
+          plot.margin   = margin(8, 12, 8, 12),   # â˜… å‡å° margin
           panel.background = element_rect(fill = "white", color = NA),
           plot.background  = element_rect(fill = "white", color = NA))
   
   return(p)
 }
 
-# ©¤©¤ 3. Éú³É 3 ¸ö layer panel ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ 3. ç”Ÿæˆ 3 ä¸ª layer panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 p_L1 <- plot_layer(1, "#8B0000",
                    "PERIOSTIN + TENASCIN\nNiche-initiating signals")
 
@@ -669,7 +676,7 @@ p_5C_v5 <- p_5C_v5 + plot_annotation(
 )
 
 ggsave(paste0(out_dir, "Fig5C_v5.pdf"), p_5C_v5,
-       width = 14, height = 5, device = cairo_pdf)   # ¡ï height: 6 ¡ú 5
+       width = 14, height = 5, device = cairo_pdf)   # â˜… height: 6 â†’ 5
 ggsave(paste0(out_dir, "Fig5C_v5.png"), p_5C_v5,
        width = 14, height = 5, dpi = 600)
 
@@ -677,7 +684,7 @@ cat("\n??? Fig 5C v5 saved\n")
 
 
 -------------------------------------------------------------------------------
-# FigureD and E ¡ª Pathway strength: ASYM vs SYM (6 pathways)
+# FigureD and E â€” Pathway strength: ASYM vs SYM (6 pathways)
 
 suppressMessages({
   library(CellChat)
@@ -687,15 +694,15 @@ suppressMessages({
   library(patchwork)
 })
 
-setwd("G:/13sample")
-out_dir <- "G:/13sample/Fig5_v2/"
+setwd(getOption("cea.project_root"))
+out_dir <- paste0(getOption("cea.project_root"), "/Fig5_v2/")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
 cellchat_asym <- readRDS("cellchat/cellchat_asym.rds")
 cellchat_sym  <- readRDS("cellchat/cellchat_sym.rds")
 
-# Step 1: ¶¨Òå 9 ÌõºËĞÄÍ¨Â·
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+# Step 1: å®šä¹‰ 9 æ¡æ ¸å¿ƒé€šè·¯
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 pathway_layers <- data.frame(
   pathway = c("PERIOSTIN", "TENASCIN",
               "COLLAGEN", "FN1", "LAMININ", "SPP1",
@@ -707,9 +714,9 @@ pathway_layers <- data.frame(
 )
 
 
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
-# Step 2: ¼ÆËãÃ¿ÌõÍ¨Â·µÄ×ÜÍ¨Ñ¶Ç¿¶È£¨ASYM ºÍ SYM£©
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Step 2: è®¡ç®—æ¯æ¡é€šè·¯çš„æ€»é€šè®¯å¼ºåº¦ï¼ˆASYM å’Œ SYMï¼‰
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 calc_strength <- function(obj, pathway) {
   if (!(pathway %in% obj@netP$pathways)) return(0)
   pwy_idx <- which(obj@netP$pathways == pathway)
@@ -717,7 +724,7 @@ calc_strength <- function(obj, pathway) {
   return(sum(mat, na.rm = TRUE))
 }
 
-# ¹¹½¨Ô­Ê¼Êı¾İ¿ò
+# æ„å»ºåŸå§‹æ•°æ®æ¡†
 df_raw <- pathway_layers %>%
   rowwise() %>%
   mutate(
@@ -731,9 +738,9 @@ cat("=== Raw pathway strength ===\n")
 print(df_raw)
 
 
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
-# Step 3: ×ª³¤¸ñÊ½ + ¹éÒ»»¯£¨Ã¿ÌõÍ¨Â· ASYM = 1.0£©
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Step 3: è½¬é•¿æ ¼å¼ + å½’ä¸€åŒ–ï¼ˆæ¯æ¡é€šè·¯ ASYM = 1.0ï¼‰
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 df_long <- df_raw %>%
   pivot_longer(cols = c(ASYM, SYM),
                names_to = "group",
@@ -743,7 +750,7 @@ df_long <- df_raw %>%
   ungroup() %>%
   mutate(
     group = factor(group, levels = c("ASYM", "SYM")),
-    # ¸ß·ù vs ÖĞµÈ·ù
+    # é«˜å¹… vs ä¸­ç­‰å¹…
     panel_side = ifelse(fc > 1.4, "Left", "Right")
   )
 
@@ -751,28 +758,28 @@ cat("\n=== Normalized data ===\n")
 print(df_long)
 
 
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
-# Step 4: ÅäÉ«£¨9 ÌõÍ¨Â·£¬°´ layer ·ÖÉ«Ïµ£©
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Step 4: é…è‰²ï¼ˆ9 æ¡é€šè·¯ï¼ŒæŒ‰ layer åˆ†è‰²ç³»ï¼‰
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 pathway_col <- c(
-  # Layer 1 - ÉîºìÏµ
+  # Layer 1 - æ·±çº¢ç³»
   "PERIOSTIN" = "#8B0000",
   "TENASCIN"  = "#C04040",
-  # Layer 2 - ºì³ÈÏµ
+  # Layer 2 - çº¢æ©™ç³»
   "COLLAGEN"  = "#E59085",
   "FN1"       = "#F0B5AD",
   "LAMININ"   = "#F8C8B0",
   "SPP1"      = "#D4906E",
-  # Layer 3 - À¶Ïµ
+  # Layer 3 - è“ç³»
   "MHC-II"    = "#3A6FA0",
   "APP"       = "#7FA5C7",
   "CXCL"      = "#A5C2D9"
 )
 
 
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
-# Step 5: Í¨ÓÃÖ÷Ìâ
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Step 5: é€šç”¨ä¸»é¢˜
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 theme_panel <- theme_classic(base_size = 11) +
   theme(
     plot.title         = element_text(face = "bold", size = 12),
@@ -788,31 +795,31 @@ theme_panel <- theme_classic(base_size = 11) +
   )
 
 
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
-# Step 6: ×ó panel ¡ª ¸ß·ùÍ¨Â· (PERIOSTIN, CXCL, LAMININ, SPP1)
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Step 6: å·¦ panel â€” é«˜å¹…é€šè·¯ (PERIOSTIN, CXCL, LAMININ, SPP1)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 df_L <- df_long %>% filter(panel_side == "Left")
 labels_L <- df_L %>% filter(group == "SYM")
 
 p_L <- ggplot(df_L,
               aes(x = group, y = rel_strength,
                   group = pathway, color = pathway)) +
-  # »ù×¼Ïß
+  # åŸºå‡†çº¿
   geom_hline(yintercept = 1, linetype = "dashed",
              color = "grey60", linewidth = 0.4) +
-  # Ïß
+  # çº¿
   geom_line(linewidth = 1.4, alpha = 0.92) +
-  # µã
+  # ç‚¹
   geom_point(size = 4.2, shape = 21, fill = "white", stroke = 1.4) +
-  # ±êÇ©£¨²»ÓÃ ggrepel£¬ÊÖ¶¯¶¨Î»±ÜÃâÓÄÁéµã£©
+  # æ ‡ç­¾ï¼ˆä¸ç”¨ ggrepelï¼Œæ‰‹åŠ¨å®šä½é¿å…å¹½çµç‚¹ï¼‰
   geom_text(data = labels_L,
-            aes(label = sprintf("%s ¡Á%.2f", pathway, rel_strength)),
+            aes(label = sprintf("%s Ã—%.2f", pathway, rel_strength)),
             x = 2.18, hjust = 0,
             fontface = "bold", size = 3.8) +
   scale_color_manual(values = pathway_col) +
   scale_x_discrete(expand = expansion(mult = c(0.18, 0.85))) +
   scale_y_continuous(breaks = c(1, 1.5, 2, 2.5),
-                     labels = c("1¡Á", "1.5¡Á", "2¡Á", "2.5¡Á"),
+                     labels = c("1Ã—", "1.5Ã—", "2Ã—", "2.5Ã—"),
                      limits = c(0.95, 2.5)) +
   labs(title = "High-amplitude pathways",
        subtitle = "Large relative gain (fc > 1.4)",
@@ -821,13 +828,13 @@ p_L <- ggplot(df_L,
   theme_panel
 
 
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
-# Step 7: ÓÒ panel ¡ª ÖĞµÈ·ùÍ¨Â· (COLLAGEN, FN1, TENASCIN, MHC-II, APP)
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Step 7: å³ panel â€” ä¸­ç­‰å¹…é€šè·¯ (COLLAGEN, FN1, TENASCIN, MHC-II, APP)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 df_R <- df_long %>% filter(panel_side == "Right")
 labels_R <- df_R %>% filter(group == "SYM") %>%
   arrange(desc(rel_strength)) %>%
-  # ¸øÃ¿ÌõÏßµÄ±êÇ©×ö y Î¢µ÷£¨±ÜÃâÖØµş£©
+  # ç»™æ¯æ¡çº¿çš„æ ‡ç­¾åš y å¾®è°ƒï¼ˆé¿å…é‡å ï¼‰
   mutate(label_y = rel_strength + c(0.005, 0.000, 0.000, -0.005, -0.005))
 
 p_R <- ggplot(df_R,
@@ -838,14 +845,14 @@ p_R <- ggplot(df_R,
   geom_line(linewidth = 1.4, alpha = 0.92) +
   geom_point(size = 4.2, shape = 21, fill = "white", stroke = 1.4) +
   geom_text(data = labels_R,
-            aes(label = sprintf("%s ¡Á%.2f", pathway, rel_strength),
+            aes(label = sprintf("%s Ã—%.2f", pathway, rel_strength),
                 y = label_y),
             x = 2.18, hjust = 0,
             fontface = "bold", size = 3.8) +
   scale_color_manual(values = pathway_col) +
   scale_x_discrete(expand = expansion(mult = c(0.18, 0.85))) +
   scale_y_continuous(breaks = seq(1, 1.20, by = 0.05),
-                     labels = c("1¡Á", "1.05¡Á", "1.10¡Á", "1.15¡Á", "1.20¡Á"),
+                     labels = c("1Ã—", "1.05Ã—", "1.10Ã—", "1.15Ã—", "1.20Ã—"),
                      limits = c(0.99, 1.22)) +
   labs(title = "Moderate-amplitude pathways",
        subtitle = "Concordant system-wide upregulation",
@@ -854,14 +861,14 @@ p_R <- ggplot(df_R,
   theme_panel
 
 
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
-# Step 8: Æ´½Ó + ±£´æ
-# ¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# Step 8: æ‹¼æ¥ + ä¿å­˜
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 p_5D <- p_L + p_R + plot_layout(widths = c(1, 1.5))
 
 p_5D <- p_5D + plot_annotation(
   title = "D. Pathway-level relative change from ASYM to SYM",
-  subtitle = "Nine core pathways | Each normalized to its own ASYM baseline (¡Á1.00)",
+  subtitle = "Nine core pathways | Each normalized to its own ASYM baseline (Ã—1.00)",
   theme = theme(
     plot.title    = element_text(face = "bold", size = 13),
     plot.subtitle = element_text(size = 10, color = "grey40")
@@ -876,17 +883,17 @@ ggsave(paste0(out_dir, "Fig5Dv5.png"), p_5D,
 cat("\n??? Figure 5D saved to:", out_dir, "\n")
 
 --------------------------------------------------------------------------------
-# FigureF ¡ª ÖĞĞÄĞÔ ASYM vs SYM ¶Ô±È (ÒÆ¶¯¹ì¼£É¢µã)
-# Õ¹Ê¾´Ó ASYM ¡ú SYM, ÄÄĞ©Ï¸°ûÏò"¸ß·¢ËÍ+¸ß½ÓÊÕ"(hubµØÎ»)ÒÆ¶¯
+# FigureF â€” ä¸­å¿ƒæ€§ ASYM vs SYM å¯¹æ¯” (ç§»åŠ¨è½¨è¿¹æ•£ç‚¹)
+# å±•ç¤ºä» ASYM â†’ SYM, å“ªäº›ç»†èƒå‘"é«˜å‘é€+é«˜æ¥æ”¶"(hubåœ°ä½)ç§»åŠ¨
 suppressMessages({
   library(CellChat); library(tidyverse); library(ggplot2); library(ggrepel)
 })
 
-setwd("G:/13sample")
-out_dir <- "G:/13sample/Fig5_centrality/"
+setwd(getOption("cea.project_root"))
+out_dir <- paste0(getOption("cea.project_root"), "/Fig5_centrality/")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
-# ©¤©¤ ¶ÁÈ¡Á½×é cellchat ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ è¯»å–ä¸¤ç»„ cellchat â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 cc_asym <- readRDS("cellchat/cellchat_asym.rds")
 cc_sym  <- readRDS("cellchat/cellchat_sym.rds")
 cc_asym <- netAnalysis_computeCentrality(cc_asym, slot.name = "netP")
@@ -898,7 +905,7 @@ celltype_short <- c("Fibroblasts1"="Fibro1","Fibroblasts2"="Fibro2",
                     "Proliferating cells2"="PRFs","SMCs1"="SMC1","SMCs3"="SMC3",
                     "Macrophages2"="mLAM","ECs"="ECs","T cells1"="T cells")
 
-# ©¤©¤ Í¨ÓÃ: ÌáÈ¡Ä³ cellchat µÄ Sender/Receiver ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ é€šç”¨: æå–æŸ cellchat çš„ Sender/Receiver â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 get_SR <- function(cc, grp) {
   centr <- cc@netP$centr
   all_cells <- levels(cc@idents); n <- length(all_cells)
@@ -915,42 +922,42 @@ sr_asym <- get_SR(cc_asym, "ASYM")
 sr_sym  <- get_SR(cc_sym,  "SYM")
 sr_all  <- bind_rows(sr_asym, sr_sym)
 
-# ©¤©¤ ºË¶Ô±í ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ æ ¸å¯¹è¡¨ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 compare_tbl <- sr_asym %>% dplyr::select(short, Sender_ASYM=Sender, Receiver_ASYM=Receiver) %>%
   left_join(sr_sym %>% dplyr::select(short, Sender_SYM=Sender, Receiver_SYM=Receiver), by="short") %>%
   mutate(dSender = Sender_SYM - Sender_ASYM,
          dReceiver = Receiver_SYM - Receiver_ASYM,
          total_shift = sqrt(dSender^2 + dReceiver^2)) %>%
   arrange(desc(total_shift))
-cat("\n=== ASYM ¡ú SYM ÖĞĞÄĞÔ±ä»¯ (°´ÒÆ¶¯¾àÀëÅÅĞò) ===\n")
+cat("\n=== ASYM â†’ SYM ä¸­å¿ƒæ€§å˜åŒ– (æŒ‰ç§»åŠ¨è·ç¦»æ’åº) ===\n")
 print(compare_tbl %>% mutate(across(where(is.numeric), ~round(.,2))))
 write.csv(compare_tbl %>% mutate(across(where(is.numeric),~round(.,4))),
           paste0(out_dir,"centrality_ASYM_vs_SYM.csv"), row.names=FALSE)
 
-# ©¤©¤ ×¼±¸¹ì¼£Êı¾İ (Ã¿¸öÏ¸°û ASYMµã¡úSYMµã) ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ å‡†å¤‡è½¨è¿¹æ•°æ® (æ¯ä¸ªç»†èƒ ASYMç‚¹â†’SYMç‚¹) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 traj <- sr_asym %>% dplyr::select(short, x0=Sender, y0=Receiver) %>%
   left_join(sr_sym %>% dplyr::select(short, x1=Sender, y1=Receiver), by="short")
-# ¸ßÁÁ hub
+# é«˜äº® hub
 hub_cols <- c("PRFs"="#00A878","mLAM"="#3A6FA0","Other"="#C0C0C0")
 traj$col <- ifelse(traj$short=="PRFs","PRFs", ifelse(traj$short=="mLAM","mLAM","Other"))
 sr_all$col <- ifelse(sr_all$short=="PRFs","PRFs", ifelse(sr_all$short=="mLAM","mLAM","Other"))
 sr_sym$col <- ifelse(sr_sym$short=="PRFs","PRFs", ifelse(sr_sym$short=="mLAM","mLAM","Other"))
 
-# ©¤©¤ ÒÆ¶¯¹ì¼£É¢µã ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ ç§»åŠ¨è½¨è¿¹æ•£ç‚¹ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 p_traj <- ggplot() +
   geom_abline(slope=1, intercept=0, linetype="dashed", color="grey85") +
-  # ¼ıÍ·: ASYM -> SYM
+  # ç®­å¤´: ASYM -> SYM
   geom_segment(data=traj,
                aes(x=x0, y=y0, xend=x1, yend=y1, color=col),
                arrow=arrow(length=unit(0.25,"cm"), type="closed"),
                linewidth=0.9, alpha=0.8) +
-  # ASYM µã (¿ÕĞÄ)
+  # ASYM ç‚¹ (ç©ºå¿ƒ)
   geom_point(data=sr_all %>% filter(group=="ASYM"),
              aes(Sender, Receiver, color=col), shape=1, size=3.5, stroke=1.2) +
-  # SYM µã (ÊµĞÄ)
+  # SYM ç‚¹ (å®å¿ƒ)
   geom_point(data=sr_all %>% filter(group=="SYM"),
              aes(Sender, Receiver, fill=col), shape=21, size=5, color="white", stroke=0.8) +
-  # ±êÇ© (±êÔÚSYMÖÕµã)
+  # æ ‡ç­¾ (æ ‡åœ¨SYMç»ˆç‚¹)
   geom_text_repel(data=sr_sym, aes(Sender, Receiver, label=short, color=col),
                   fontface="bold", size=4, box.padding=0.6, seed=1, show.legend=FALSE) +
   scale_color_manual(values=hub_cols, guide="none") +
@@ -967,11 +974,11 @@ p_traj <- ggplot() +
 ggsave(paste0(out_dir,"centrality_trajectory.pdf"), p_traj, width=7.5, height=6.5, device=cairo_pdf)
 ggsave(paste0(out_dir,"centrality_trajectory.png"), p_traj, width=7.5, height=6.5, dpi=600)
 
-# ©¤©¤ ²¹³ä: ·Ö×éÌõĞÎÍ¼ (Ã¿Ï¸°û Sender/Receiver ÔÚÁ½×é¶Ô±È) ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ è¡¥å……: åˆ†ç»„æ¡å½¢å›¾ (æ¯ç»†èƒ Sender/Receiver åœ¨ä¸¤ç»„å¯¹æ¯”) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 bar_df <- sr_all %>%
   pivot_longer(c(Sender,Receiver), names_to="role", values_to="score")
 bar_df$group <- factor(bar_df$group, levels=c("ASYM","SYM"))
-# Ï¸°û°´ SYM receiver ÅÅĞò
+# ç»†èƒæŒ‰ SYM receiver æ’åº
 ord <- sr_sym %>% arrange(desc(Receiver)) %>% pull(short)
 bar_df$short <- factor(bar_df$short, levels=ord)
 
@@ -992,7 +999,7 @@ p_bar <- ggplot(bar_df, aes(short, score, fill=group)) +
 ggsave(paste0(out_dir,"centrality_barplot.pdf"), p_bar, width=7, height=6.5, device=cairo_pdf)
 ggsave(paste0(out_dir,"centrality_barplot.png"), p_bar, width=7, height=6.5, dpi=600)
 
-cat("\nÍê³É. Êä³ö:\n  centrality_trajectory (ÒÆ¶¯¹ì¼£É¢µã-Ö÷Í¼)\n  centrality_barplot (·Ö×éÌõĞÎÍ¼-±¸Ñ¡)\n  centrality_ASYM_vs_SYM.csv (ºË¶Ô±í)\n")
+cat("\nå®Œæˆ. è¾“å‡º:\n  centrality_trajectory (ç§»åŠ¨è½¨è¿¹æ•£ç‚¹-ä¸»å›¾)\n  centrality_barplot (åˆ†ç»„æ¡å½¢å›¾-å¤‡é€‰)\n  centrality_ASYM_vs_SYM.csv (æ ¸å¯¹è¡¨)\n")
 print(p_traj); print(p_bar)
   
 --------------------------------------------------------------------------------
@@ -1012,7 +1019,7 @@ suppressPackageStartupMessages({
 
 set.seed(20260901)
 
-output_dir <- "G:/13sample/Fig5_CellChat/Fig5_temporal_donor_validation"
+output_dir <- paste0(getOption("cea.project_root"), "/Fig5_CellChat/Fig5_temporal_donor_validation")
 result_rds <- file.path(output_dir, "Fig5S_analysis_results.rds")
 stopifnot(file.exists(result_rds))
 

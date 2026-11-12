@@ -1,26 +1,33 @@
+# Project root: the folder containing SMC/, macro/, Fig3/, Fig5_CellChat/, etc.
+# Every path in this script is built from this one setting, so the code no longer
+# depends on a single hard-coded drive letter. Either start R/RStudio in the
+# project root, or edit the one line below to point at it directly.
+# Stored as an R option so it survives the rm(list = ls()) calls between sections.
+options(cea.project_root = normalizePath(".", mustWork = FALSE))
+
 #Supplemental Figure 2
 
 ## FigureA 
-##------------Ï¸°ûÈºÖ®¼äµÄÏà¹ØĞÔÈÈÍ¼--------------
+##------------ç»†èƒç¾¤ä¹‹é—´çš„ç›¸å…³æ€§çƒ­å›¾--------------
 av <-AverageExpression(combined131,group.by = "celltype", assays = "RNA")
 av<-av[[1]]
 
-cg<-names(tail(sort(apply(av, 1, sd)),1000))#Ñ¡³ö±ê×¼²î×î´óµÄ1000¸ö»ùÒò
-# ²é¿´Õâ1000¸ö»ùÒòÔÚ¸÷Ï¸°ûÈºÖĞµÄ±í´ï¾ØÕó
+cg<-names(tail(sort(apply(av, 1, sd)),1000))#é€‰å‡ºæ ‡å‡†å·®æœ€å¤§çš„1000ä¸ªåŸºå› 
+# æŸ¥çœ‹è¿™1000ä¸ªåŸºå› åœ¨å„ç»†èƒç¾¤ä¸­çš„è¡¨è¾¾çŸ©é˜µ
 expression_matrix <- av[cg,]
 
-# È·±£ expression_matrix ÊÇ¾ØÕó
+# ç¡®ä¿ expression_matrix æ˜¯çŸ©é˜µ
 if (!is.matrix(expression_matrix)) {
   expression_matrix <- as.matrix(expression_matrix)
 }
 
-# ¼ÆËãÏ¸°ûÈºµÄÏà¹ØĞÔ¾ØÕó£¨Ê¹ÓÃSpearmanÏà¹ØĞÔ£©
+# è®¡ç®—ç»†èƒç¾¤çš„ç›¸å…³æ€§çŸ©é˜µï¼ˆä½¿ç”¨Spearmanç›¸å…³æ€§ï¼‰
 cor_matrix <- cor(expression_matrix, method = 'spearman')
 
-#pheatmap»æÖÆÈÈÍ¼
+#pheatmapç»˜åˆ¶çƒ­å›¾
 library(pheatmap)
 
-# Éú³ÉÈÈÍ¼
+# ç”Ÿæˆçƒ­å›¾
 pdf("combined131/celltype_correlation_heatmap.pdf", width = 10, height = 8)
 pheatmap(cor_matrix, 
          clustering_distance_rows = "correlation", 
@@ -31,10 +38,10 @@ pheatmap(cor_matrix,
 dev.off()
 
 
-# Éú³Éµ÷É«°å£¬ÀàËÆÓÚNature·ç¸ñ
+# ç”Ÿæˆè°ƒè‰²æ¿ï¼Œç±»ä¼¼äºNatureé£æ ¼
 library(RColorBrewer)
 nature_colors <- colorRampPalette(c("blue", "white", "red"))(100)
-# Éú³ÉÈÈÍ¼²¢±£´æÎªPDF
+# ç”Ÿæˆçƒ­å›¾å¹¶ä¿å­˜ä¸ºPDF
 pdf("combined131/celltype_correlation_heatmap_nature_style.pdf", width = 10, height = 8)
 pheatmap(cor_matrix, 
          clustering_distance_rows = "correlation", 
@@ -47,7 +54,7 @@ dev.off()
 
 
 --------------------------------------------------------------------------------
-#----------- Fig B UMAP  ggrastr Õ¤¸ñ»¯
+#----------- Fig B UMAP  ggrastr æ …æ ¼åŒ–
 #
 
 suppressMessages({
@@ -55,14 +62,14 @@ suppressMessages({
   library(ggplot2)
   library(dplyr)
   library(patchwork)
-  library(ggrastr)        # ¡ï ¹Ø¼ü
+  library(ggrastr)        # â˜… å…³é”®
 })
 
-out_dir <- "G:/13sample/Alsaigh_integration/"
+out_dir <- paste0(getOption("cea.project_root"), "/Alsaigh_integration/")
 
-# ¼ÙÉè combined ¶ÔÏóÒÑ¼ÓÔØ£¬º¬ dataset / your_celltype / seurat_clusters / umap_1 / umap_2
+# å‡è®¾ combined å¯¹è±¡å·²åŠ è½½ï¼Œå« dataset / your_celltype / seurat_clusters / umap_1 / umap_2
 
-# ©¤©¤ ÌáÈ¡ UMAP ×ø±ê ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ æå– UMAP åæ ‡ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 umap_coords <- as.data.frame(Embeddings(combined, "umap"))
 umap_coords$dataset <- combined$dataset
 umap_coords$your_celltype <- combined$your_celltype
@@ -85,9 +92,9 @@ simple_colors <- c(
   "Mast cells"="#8BEAFFFF", "ECs"="#FFE705FF", "Proliferating"="#524559FF"
 )
 
-# ©¤©¤ Panel 1A: By dataset (Õ¤¸ñ»¯) ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ Panel 1A: By dataset (æ …æ ¼åŒ–) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 p_A <- ggplot(umap_coords, aes(x = umap_1, y = umap_2, color = dataset)) +
-  ggrastr::rasterise(                                                # ¡ï ¹Ø¼ü
+  ggrastr::rasterise(                                                # â˜… å…³é”®
     geom_point(size = 0.25, alpha = 0.75),
     dpi = 600
   ) +
@@ -101,16 +108,16 @@ p_A <- ggplot(umap_coords, aes(x = umap_1, y = umap_2, color = dataset)) +
         legend.text = element_text(size = 10, face = "bold")) +
   guides(color = guide_legend(override.aes = list(size = 4)))
 
-# ©¤©¤ Panel 1B: Our cell types overlaid (Õ¤¸ñ»¯) ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ Panel 1B: Our cell types overlaid (æ …æ ¼åŒ–) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 p_B <- ggplot() +
-  # µ×²ã£ºAlsaigh »ÒÉ«±³¾°£¨Õ¤¸ñ»¯£©
+  # åº•å±‚ï¼šAlsaigh ç°è‰²èƒŒæ™¯ï¼ˆæ …æ ¼åŒ–ï¼‰
   ggrastr::rasterise(
     geom_point(data = umap_coords[umap_coords$dataset == "Alsaigh_2022", ],
                aes(x = umap_1, y = umap_2),
                color = "grey85", size = 0.15, alpha = 0.6),
     dpi = 600
   ) +
-  # ¶¥²ã£ºOur ÓĞÉ«£¨Õ¤¸ñ»¯£©
+  # é¡¶å±‚ï¼šOur æœ‰è‰²ï¼ˆæ …æ ¼åŒ–ï¼‰
   ggrastr::rasterise(
     geom_point(data = umap_coords[umap_coords$dataset == "Our_study" &
                                     !is.na(umap_coords$celltype_simple), ],
@@ -129,7 +136,7 @@ p_B <- ggplot() +
         legend.text   = element_text(size = 9, face = "bold")) +
   guides(color = guide_legend(override.aes = list(size = 3, alpha = 1), ncol = 1))
 
-# ©¤©¤ Panel 1C: Integrated clusters (Õ¤¸ñ»¯) ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ Panel 1C: Integrated clusters (æ …æ ¼åŒ–) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 cluster_centers <- umap_coords %>%
   group_by(seurat_clusters) %>%
   summarise(x = median(umap_1), y = median(umap_2), n = n(), .groups = "drop") %>%
@@ -137,11 +144,11 @@ cluster_centers <- umap_coords %>%
 
 p_C <- ggplot(umap_coords, aes(x = umap_1, y = umap_2,
                                color = factor(seurat_clusters))) +
-  ggrastr::rasterise(                                                # ¡ï ¹Ø¼ü
+  ggrastr::rasterise(                                                # â˜… å…³é”®
     geom_point(size = 0.25, alpha = 0.85),
     dpi = 600
   ) +
-  geom_label(data = cluster_centers,                                 # Ê¸Á¿±£Áô
+  geom_label(data = cluster_centers,                                 # çŸ¢é‡ä¿ç•™
              aes(x = x, y = y, label = seurat_clusters),
              fill = "white", color = "black",
              size = 3, fontface = "bold",
@@ -154,7 +161,7 @@ p_C <- ggplot(umap_coords, aes(x = umap_1, y = umap_2,
   theme(plot.title = element_text(face = "bold", size = 13, hjust = 0.5),
         legend.position = "none")
 
-# ©¤©¤ Æ´Í¼ ©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤
+# â”€â”€ æ‹¼å›¾ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 fig1F_umap <- p_A | p_B | p_C
 fig1F_umap <- fig1F_umap + plot_annotation(
   title = "F. Integration with Alsaigh 2022 (GSE159677) confirms cell type taxonomy",
@@ -178,24 +185,24 @@ cat("\n??? Fig 1F UMAP (rasterized) saved\n")
 --------------------------------------------------------------------------------
   
   
-# Fig C-D ¡ª ×é¼ä²îÒì¿ÉÊÓ»¯
+# Fig C-D â€” ç»„é—´å·®å¼‚å¯è§†åŒ–
 suppressMessages({
   library(Seurat)
   library(ggplot2)
   library(dplyr)
   library(patchwork)
   library(ggsignif)
-  library(ggdist)         # raincloud / half-violin (ÏÖ´ú·ç)
+  library(ggdist)         # raincloud / half-violin (ç°ä»£é£)
   library(ggbeeswarm)     # sina plot
-  library(gghalves)       # half-violin Æ´½Ó
+  library(gghalves)       # half-violin æ‹¼æ¥
 })
 
-out_dir <- "G:/13sample/Alsaigh_integration/"
+out_dir <- paste0(getOption("cea.project_root"), "/Alsaigh_integration/")
 
-# ÅäÉ«
+# é…è‰²
 group_colors <- c(
-  "ASYM"    = "#FFE705FF",   # »Æ
-  "SYM"     = "#C71000FF"    # ºì
+  "ASYM"    = "#FFE705FF",   # é»„
+  "SYM"     = "#C71000FF"    # çº¢
 )
 tissue_colors <- c(
   "control" = "#A8A8A8",
@@ -203,7 +210,7 @@ tissue_colors <- c(
 )
 
 # ============================================================================
-# Êı¾İ×¼±¸£¨½ÓĞøÄúµÄÕûºÏ½Å±¾£©
+# æ•°æ®å‡†å¤‡ï¼ˆæ¥ç»­æ‚¨çš„æ•´åˆè„šæœ¬ï¼‰
 # ============================================================================
 if (!exists("combined")) {
   combined <- readRDS(paste0(out_dir, "integrated_obj_with_Alsaigh.rds"))
@@ -217,14 +224,14 @@ combined$broad_type[combined$seurat_clusters %in% fibroblast_smc_clusters] <- "F
 combined$broad_type[combined$seurat_clusters %in% macrophage_clusters]     <- "Macrophage"
 
 
-#·½°¸ 1£ºRAINCLOUD PLOT£¨ÔÆÓêÍ¼£©¡ª¡ª ×îÍÆ¼ö
+#æ–¹æ¡ˆ 1ï¼šRAINCLOUD PLOTï¼ˆäº‘é›¨å›¾ï¼‰â€”â€” æœ€æ¨è
 
 make_raincloud <- function(df, x_var, y_var, fill_colors,
                            comparisons_list, title, y_label) {
   
   ggplot(df, aes_string(x = x_var, y = y_var, fill = x_var, color = x_var)) +
     
-    # Óê£ºÉ¢µã£¨×óÏÂ·½£©
+    # é›¨ï¼šæ•£ç‚¹ï¼ˆå·¦ä¸‹æ–¹ï¼‰
     ggdist::stat_dots(
       side = "left",
       justification = 1.12,
@@ -233,17 +240,17 @@ make_raincloud <- function(df, x_var, y_var, fill_colors,
       alpha = 0.35
     ) +
     
-    # ÔÆ£º°ëĞ¡ÌáÇÙ£¨ÓÒÉÏ·½ÃÜ¶È·Ö²¼£©
+    # äº‘ï¼šåŠå°æç´ï¼ˆå³ä¸Šæ–¹å¯†åº¦åˆ†å¸ƒï¼‰
     ggdist::stat_halfeye(
       adjust = 0.8,
       width = 0.6,
-      .width = 0,           # ²»»­ÖĞÎ»ÊıÏß
+      .width = 0,           # ä¸ç”»ä¸­ä½æ•°çº¿
       justification = -0.15,
       point_colour = NA,
       alpha = 0.7
     ) +
     
-    # Ïä£ºÃÔÄãÏäÏßÍ¼£¨ÖĞ¼ä£©
+    # ç®±ï¼šè¿·ä½ ç®±çº¿å›¾ï¼ˆä¸­é—´ï¼‰
     geom_boxplot(
       width = 0.12,
       outlier.shape = NA,
@@ -255,7 +262,7 @@ make_raincloud <- function(df, x_var, y_var, fill_colors,
     scale_fill_manual(values = fill_colors) +
     scale_color_manual(values = fill_colors) +
     
-    # P Öµ±ê×¢
+    # P å€¼æ ‡æ³¨
     geom_signif(
       comparisons = comparisons_list,
       map_signif_level = function(p) {
@@ -282,7 +289,7 @@ make_raincloud <- function(df, x_var, y_var, fill_colors,
     )
 }
 
-# 4 ¸ö Panel
+# 4 ä¸ª Panel
 fibro_alsaigh <- combined@meta.data %>%
   filter(broad_type == "Fibroblast_SMC", dataset == "Alsaigh_2022") %>%
   mutate(tissue_type = factor(tissue_type, levels = c("control","plaque")))
@@ -327,35 +334,35 @@ ggsave(paste0(out_dir, "Fig1F_RAINCLOUD.png"), fig1F_raincloud,
        width = 13, height = 11, dpi = 300)
 
 
-##·½°¸ 2£ºHalf-Violin + Dot + Boxplot£¨ÈıºÏÒ»¾«¼ò°æ£©
+##æ–¹æ¡ˆ 2ï¼šHalf-Violin + Dot + Boxplotï¼ˆä¸‰åˆä¸€ç²¾ç®€ç‰ˆï¼‰
 
-# 1. ÖØĞÂ¶¨Òåº¯Êı£¬Ê¹ÓÃ ggdist Ìæ´ú gghalves
+# 1. é‡æ–°å®šä¹‰å‡½æ•°ï¼Œä½¿ç”¨ ggdist æ›¿ä»£ gghalves
 make_halfviolin <- function(df, x_var, y_var, fill_colors,
                             comparisons_list, title, y_label) {
   
-  # Ê¹ÓÃ¹Ù·½ÍÆ¼öµÄ .data[[]] Ìæ´ú¼´½«±»ÌÔÌ­µÄ aes_string
+  # ä½¿ç”¨å®˜æ–¹æ¨èçš„ .data[[]] æ›¿ä»£å³å°†è¢«æ·˜æ±°çš„ aes_string
   ggplot(df, aes(x = .data[[x_var]], y = .data[[y_var]], fill = .data[[x_var]], color = .data[[x_var]])) +
     
-    # ×ó°ëĞ¡ÌáÇÙ (ggdist Óï·¨)
+    # å·¦åŠå°æç´ (ggdist è¯­æ³•)
     ggdist::stat_halfeye(
       adjust = 0.5,
       width = 0.5,
-      .width = 0,             # ²»ÏÔÊ¾µ×²¿µÄÇø¼äÌõ
-      justification = 1.1,    # Ïò×óÆ«ÒÆ
-      point_colour = NA,      # ²»ÏÔÊ¾ÖĞÎ»Êıµã
+      .width = 0,             # ä¸æ˜¾ç¤ºåº•éƒ¨çš„åŒºé—´æ¡
+      justification = 1.1,    # å‘å·¦åç§»
+      point_colour = NA,      # ä¸æ˜¾ç¤ºä¸­ä½æ•°ç‚¹
       alpha = 0.7
     ) +
     
-    # ÓÒ°ëÉ¢µã (ggdist Óï·¨)
+    # å³åŠæ•£ç‚¹ (ggdist è¯­æ³•)
     ggdist::stat_dots(
       side = "right",
-      justification = -0.15,  # ÏòÓÒÆ«ÒÆ£¬¸øÏäÏßÍ¼Áô³ö¿Õ¼ä
+      justification = -0.15,  # å‘å³åç§»ï¼Œç»™ç®±çº¿å›¾ç•™å‡ºç©ºé—´
       binwidth = NA,
       dotsize = 0.6,
       alpha = 0.4
     ) +
     
-    # ÖĞ¼äĞ¡ÏäÏß
+    # ä¸­é—´å°ç®±çº¿
     geom_boxplot(
       width = 0.15,
       outlier.shape = NA,
@@ -367,7 +374,7 @@ make_halfviolin <- function(df, x_var, y_var, fill_colors,
     scale_fill_manual(values = fill_colors) +
     scale_color_manual(values = fill_colors) +
     
-    # ÏÔÖøĞÔ¼ìÑé
+    # æ˜¾è‘—æ€§æ£€éªŒ
     geom_signif(
       comparisons = comparisons_list,
       map_signif_level = function(p) {
@@ -410,14 +417,14 @@ p4b <- make_halfviolin(mac_ours, "group", "TREM2_LAM2", group_colors,
                        list( c("ASYM","SYM")),
                        "Our study", "TREM2+ LAM score")
 
-# 3. Æ´Í¼²¢Ìí¼ÓÖ÷±êÌâ
+# 3. æ‹¼å›¾å¹¶æ·»åŠ ä¸»æ ‡é¢˜
 fig1F_halfviolin <- (p1b | p2b) / (p3b | p4b) +
   plot_annotation(
     title = "Fig 1F. Half-violin + dot + boxplot",
     theme = theme(plot.title = element_text(face = "bold", size = 15, hjust = 0.5))
   )
 
-# 4. ÍêÃÀ±£´æ£¨´ËÊ±²»ÔÙ±¨´í£©
+# 4. å®Œç¾ä¿å­˜ï¼ˆæ­¤æ—¶ä¸å†æŠ¥é”™ï¼‰
 ggsave(paste0(out_dir, "Fig1F_HALFVIOLIN.pdf"), fig1F_halfviolin,
        width = 13, height = 11, device = "pdf")
 
@@ -425,51 +432,51 @@ ggsave(paste0(out_dir, "Fig1F_HALFVIOLIN.png"), fig1F_halfviolin,
        width = 13, height = 11, dpi = 300)
 
 
-# ----·½°¸ 3£ºSina Plot£¨·äÈº·Ö²¼Í¼£©
-#Sina Plot ¡ª ĞŞ³¤ + ½ô´ÕÓÅ»¯°æ
+# ----æ–¹æ¡ˆ 3ï¼šSina Plotï¼ˆèœ‚ç¾¤åˆ†å¸ƒå›¾ï¼‰
+#Sina Plot â€” ä¿®é•¿ + ç´§å‡‘ä¼˜åŒ–ç‰ˆ
 
 make_sinaplot <- function(df, x_var, y_var, fill_colors,
                           comparisons_list, title, y_label) {
   
   ggplot(df, aes_string(x = x_var, y = y_var, color = x_var)) +
     
-    # ±³¾°Ğ¡ÌáÇÙ£¨¸üÕ­£©
+    # èƒŒæ™¯å°æç´ï¼ˆæ›´çª„ï¼‰
     geom_violin(aes_string(fill = x_var), 
                 alpha = 0.15, color = NA, trim = FALSE,
-                width = 0.6) +              # ¡ï ´ÓÄ¬ÈÏ0.9¸ÄÎª0.6
+                width = 0.6) +              # â˜… ä»é»˜è®¤0.9æ”¹ä¸º0.6
     
-    # Sina£º°´ÃÜ¶È·Ö²¼µÄÉ¢µã£¨¸üÕ­£©
+    # Sinaï¼šæŒ‰å¯†åº¦åˆ†å¸ƒçš„æ•£ç‚¹ï¼ˆæ›´çª„ï¼‰
     ggbeeswarm::geom_quasirandom(
-      width = 0.18,                          # ¡ï ´Ó0.3¸ÄÎª0.18
-      size = 0.4,                            # ÂÔĞ¡
+      width = 0.18,                          # â˜… ä»0.3æ”¹ä¸º0.18
+      size = 0.4,                            # ç•¥å°
       alpha = 0.5
     ) +
     
-    # ÖĞÎ»Êı + ËÄ·ÖÎ»Ïß£¨¸üÕ­£©
+    # ä¸­ä½æ•° + å››åˆ†ä½çº¿ï¼ˆæ›´çª„ï¼‰
     stat_summary(
       fun = median,
       fun.min = function(x) quantile(x, 0.25),
       fun.max = function(x) quantile(x, 0.75),
       geom = "crossbar",
-      width = 0.28,                          # ¡ï ´Ó0.4¸ÄÎª0.28
+      width = 0.28,                          # â˜… ä»0.4æ”¹ä¸º0.28
       color = "black",
       fill = NA,
       size = 0.35
     ) +
     
-    # ¾ùÖµ±ê¼Ç
+    # å‡å€¼æ ‡è®°
     stat_summary(
       fun = mean,
       geom = "point",
       shape = 18,
-      size = 2.5,                            # ¡ï ÂÔĞ¡
+      size = 2.5,                            # â˜… ç•¥å°
       color = "black"
     ) +
     
     scale_fill_manual(values = fill_colors) +
     scale_color_manual(values = fill_colors) +
     
-    # P Öµ±ê×¢
+    # P å€¼æ ‡æ³¨
     geom_signif(
       comparisons = comparisons_list,
       map_signif_level = function(p) {
@@ -480,14 +487,14 @@ make_sinaplot <- function(df, x_var, y_var, fill_colors,
       },
       test = "wilcox.test",
       textsize = 4.5,
-      tip_length = 0.008,                    # ¡ï Á¬½ÓÏß¸ü¶Ì
-      step_increase = 0.07,                  # ¡ï ¶à×é¼ä¸ô¸ü½ô
+      tip_length = 0.008,                    # â˜… è¿æ¥çº¿æ›´çŸ­
+      step_increase = 0.07,                  # â˜… å¤šç»„é—´éš”æ›´ç´§
       color = "black",
       size = 0.35
     ) +
     
-    # x ÖáÁô°×£¨·ÀÖ¹É¢µãÌù±ß£©
-    scale_x_discrete(expand = expansion(add = 0.6)) +   # ¡ï ¹Ø¼ü£º×óÓÒÁô°×
+    # x è½´ç•™ç™½ï¼ˆé˜²æ­¢æ•£ç‚¹è´´è¾¹ï¼‰
+    scale_x_discrete(expand = expansion(add = 0.6)) +   # â˜… å…³é”®ï¼šå·¦å³ç•™ç™½
     
     labs(title = title, y = y_label, x = "") +
     theme_classic(base_size = 11) +
@@ -501,16 +508,16 @@ make_sinaplot <- function(df, x_var, y_var, fill_colors,
       axis.line = element_line(size = 0.5),
       axis.ticks = element_line(size = 0.4),
       
-      # ¡ï¡ï¡ï ¹Ø¼üÈı¸ö²ÎÊı ¡ï¡ï¡ï
-      aspect.ratio = 1.5,                    # ¡ï Ç¿ÖÆ¸ß¿í±È£¬ÈÃÍ¼¸üĞŞ³¤
-      plot.margin = margin(5, 3, 5, 3),      # ¡ï µ¥ panel ÄÚ±ß¾àÊÕ½ô
-      panel.spacing = unit(0.2, "lines")     # ¡ï panel Ö®¼ä¼ä¾à
+      # â˜…â˜…â˜… å…³é”®ä¸‰ä¸ªå‚æ•° â˜…â˜…â˜…
+      aspect.ratio = 1.5,                    # â˜… å¼ºåˆ¶é«˜å®½æ¯”ï¼Œè®©å›¾æ›´ä¿®é•¿
+      plot.margin = margin(5, 3, 5, 3),      # â˜… å• panel å†…è¾¹è·æ”¶ç´§
+      panel.spacing = unit(0.2, "lines")     # â˜… panel ä¹‹é—´é—´è·
     )
 }
 
 
 # ============================================================================
-# Éú³É 4 ¸ö panel£¨Êı¾İ×¼±¸²¿·Ö±£³Ö²»±ä£©
+# ç”Ÿæˆ 4 ä¸ª panelï¼ˆæ•°æ®å‡†å¤‡éƒ¨åˆ†ä¿æŒä¸å˜ï¼‰
 # ============================================================================
 p1c <- make_sinaplot(fibro_alsaigh, "tissue_type", "FibroHealing1", tissue_colors,
                      list(c("control","plaque")),
@@ -530,12 +537,12 @@ p4c <- make_sinaplot(mac_ours, "group", "TREM2_LAM2", group_colors,
 
 
 # ============================================================================
-# Æ´Í¼£º4 panel ½ô´Õ²¼¾Ö (2¡Á2)
+# æ‹¼å›¾ï¼š4 panel ç´§å‡‘å¸ƒå±€ (2Ã—2)
 # ============================================================================
 fig1F_sina <- (p1c | p2c) / (p3c | p4c) +
-  plot_layout(guides = "collect") &        # Í³Ò»Í¼Àı£¨ËäÈ»ÎŞÍ¼Àı£©
+  plot_layout(guides = "collect") &        # ç»Ÿä¸€å›¾ä¾‹ï¼ˆè™½ç„¶æ— å›¾ä¾‹ï¼‰
   theme(
-    plot.margin = margin(2, 2, 2, 2)       # ¡ï Ã¿¸ö×ÓÍ¼Íâ±ß¾à
+    plot.margin = margin(2, 2, 2, 2)       # â˜… æ¯ä¸ªå­å›¾å¤–è¾¹è·
   )
 
 fig1F_sina <- fig1F_sina +
@@ -549,11 +556,11 @@ fig1F_sina <- fig1F_sina +
 
 
 # ============================================================================
-# ±£´æ£º¿í¶È´ó·ùËõ¼õ + ¸ß¶Èµ÷Õû
+# ä¿å­˜ï¼šå®½åº¦å¤§å¹…ç¼©å‡ + é«˜åº¦è°ƒæ•´
 # ============================================================================
 ggsave(paste0(out_dir, "Fig1F_SINA_compact.pdf"), fig1F_sina,
-       width = 8.5,                          # ¡ï ´Ó 13 Ëõµ½ 8.5 ´ç
-       height = 10,                          # ¡ï ¸ß¶È±£³Ö ¡ú ĞŞ³¤Ğ§¹û
+       width = 8.5,                          # â˜… ä» 13 ç¼©åˆ° 8.5 å¯¸
+       height = 10,                          # â˜… é«˜åº¦ä¿æŒ â†’ ä¿®é•¿æ•ˆæœ
        device = "pdf")
 
 ggsave(paste0(out_dir, "Fig1F_SINA_compact.png"), fig1F_sina,
