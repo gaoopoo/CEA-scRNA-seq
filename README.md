@@ -5,7 +5,10 @@ Analysis code for the carotid endarterectomy (CEA) single-cell RNA sequencing (s
 This repository contains the R code used to analyse scRNA-seq data from human carotid atherosclerotic plaques, stratified by blinded histopathological grading combined with clinical presentation. It does not contain the sequencing data itself: the data are deposited in the NCBI Gene Expression Omnibus (GEO), separate from this code repository.
 
 > [!NOTE]
-> This README describes the nine scripts in this repository (cleaned UTF-8 versions uploaded 2026-11-12; the original GBK uploads were verified 2026-11-11). Two placeholders remain on purpose while the manuscript is unpublished: the GEO Series accession (assigned after GEO finishes validating the submission) and the Zenodo DOI (created when the code is archived at publication time). Fill those in when they exist; everything else in this file is complete. See "Known limitations" before publishing: the scripts depend on intermediate `.rds` files that are not in this repository.
+> This README describes the nine scripts in this repository (cleaned UTF-8 versions uploaded 2026-11-12; the original "
+    "GBK uploads were verified 2026-11-11). One placeholder remains on purpose while the manuscript is unpublished: the Zenodo DOI (created when the code is "
+    "archived at publication time). Fill it in when it exists; everything else in this file is complete. See "
+    "\"Known limitations\" before publishing: the scripts depend on intermediate `.rds` files that are not in this repository.
 
 ## Study design
 
@@ -38,9 +41,10 @@ The repository holds one script per figure. Each script starts from an intermedi
 
 The data generated in this study are deposited in GEO:
 
-- GEO Series accession: **\[TO COMPLETE: add the GSE accession once GEO assigns it\]**
-- Status at the time of writing: the submission has been sent and the metadata accepted; GEO is validating the raw files, after which the Series will be queued for processing and a GSE accession assigned. The record is private until 30 June 2027.
+- GEO Series accession: **GSE353275** (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE353275)
+- Status at the time of writing: the submission has been accepted and the Series approved (GSE353275, assigned 2026-11-12). The record is private until 30 June 2027.
 - Samples: 12 (ASYM1–ASYM6, SYM1–SYM6)
+- Sample accessions: ASYM1 GSM10172607, ASYM2 GSM10172608, ASYM3 GSM10172609, ASYM4 GSM10172610, ASYM5 GSM10172611, ASYM6 GSM10172612, SYM1 GSM10172613, SYM2 GSM10172614, SYM3 GSM10172615, SYM4 GSM10172616, SYM5 GSM10172617, SYM6 GSM10172618
 
 Public datasets reanalysed alongside the newly generated data:
 
